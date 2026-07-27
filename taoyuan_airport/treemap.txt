@@ -1,0 +1,17 @@
+taoyuan_airport/
+│
+├── index.html          # 網站主頁面 (UI 結構)
+├── style.css           # 網站樣式與導向動畫
+│
+├── js/
+│   ├── i18n.js         # 6 國語言翻譯字典
+│   ├── graph.js        # 地圖節點 (Nodes/Edges) 與 Dijkstra 演算法
+│   └── app.js          # 網站主控邏輯 (UI 事件、畫線、語言切換)
+│
+└── assets/
+    ├──B2.svg
+    ├──F1.svg
+    ├──F2.svg
+    ├──F3.svg
+    ├──F4.svg
+    └──F5.svg

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>桃園國際機場 互動導覽地圖 | Taoyuan Airport Map</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <header class="navbar">
+    <div class="logo">
+      ✈️ <span data-i18n="app_title">桃園國際機場導覽</span>
+    </div>
+
+    <div class="lang-select">
+      🌐 
+      <select id="langSelector">
+        <option value="zh-TW">繁體中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="th">ไทย</option>
+        <option value="vi">Tiếng Việt</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- 主要內容區 -->
+  <main class="main-container">
+
+    <!-- 控制與導航側邊欄 -->
+    <aside class="controls-panel">
+      <!-- 樓層選擇 -->
+      <div class="control-group">
+        <label data-i18n="select_floor">選擇樓層</label>
+        <div class="floor-buttons" id="floorButtons">
+          <button class="btn-floor" data-floor="B2">B2</button>
+          <button class="btn-floor active" data-floor="F1">1F</button>
+          <button class="btn-floor" data-floor="F2">2F</button>
+          <button class="btn-floor" data-floor="F3">3F</button>
+          <button class="btn-floor" data-floor="F4">4F</button>
+          <button class="btn-floor" data-floor="F5">5F</button>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 路徑導航控制項 -->
+      <div class="control-group navigation-box">
+        <h3 data-i18n="nav_title">🗺️ 路徑導航</h3>
+        
+        <label data-i18n="start_point">起點：</label>
+        <select id="startNodeSelect">
+          <option value="" data-i18n="select_start">請選擇起點</option>
+        </select>
+
+        <label data-i18n="end_point">終點：</label>
+        <select id="endNodeSelect">
+          <option value="" data-i18n="select_end">請選擇終點</option>
+        </select>
+
+        <button id="btnFindPath" class="btn-primary" data-i18n="start_nav">開始導航</button>
+        <button id="btnClearPath" class="btn-secondary" data-i18n="clear_nav">清除路線</button>
+      </div>
+
+      <!-- 緊急求助按鈕 -->
+      <div class="sos-section">
+        <button class="btn-sos" id="btnSOS" data-i18n="sos_btn">🚨 緊急求助 (SOS)</button>
+      </div>
+    </aside>
+
+    <!-- 中央地圖顯示區 -->
+    <section class="map-viewport">
+      <div class="map-container" id="mapContainer">
+        <div class="loading-text" data-i18n="loading">地圖載入中...</div>
+      </div>
+
+      <!-- 右下角縮放控制 -->
+      <div class="zoom-controls">
+        <button id="zoomIn">+</button>
+        <button id="zoomOut">-</button>
+        <button id="zoomReset">⟲</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JS 載入順序：i18n -> graph -> app -->
+  <script src="js/i18n.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
