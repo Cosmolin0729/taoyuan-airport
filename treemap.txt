@@ -1,17 +1,27 @@
 taoyuan_airport/
 │
 ├── index.html          # 網站主頁面 (UI 結構)
-├── style.css           # 網站樣式與導向動畫
+├── style.css           # 網站樣式 (地圖置中、標點動態與視覺效果)
 │
 ├── js/
-│   ├── i18n.js         # 6 國語言翻譯字典
-│   ├── graph.js        # 地圖節點 (Nodes/Edges) 與 Dijkstra 演算法
-│   └── app.js          # 網站主控邏輯 (UI 事件、畫線、語言切換)
+│   ├── locales/        # 🌐 多國語言字典檔 (按語言獨立拆分)
+│   │   ├── zh-TW.js    # 繁體中文
+│   │   ├── en.js       # English
+│   │   ├── ja.js       # 日本語
+│   │   ├── ko.js       # 한국어
+│   │   ├── th.js       # ไทย
+│   │   ├── vi.js       # Tiếng Việt
+│   │   └── es.js       # Español
+│   │
+│   ├── i18n.js         # 多國語言初始化與切換邏輯
+│   ├── poiData.js      # 📍 標點座標檔 (依 B2, F1, F2, F3, F4 樓層分類)
+│   ├── graph.js        # 🗺️ Dijkstra 導航演算法與地圖節點
+│   └── app.js          # ⚙️ 網站主控邏輯 (樓層切換、SVG 載入、標點繪製)
 │
-└── assets/
-    ├──B2.svg
-    ├──F1.svg
-    ├──F2.svg
-    ├──F3.svg
-    ├──F4.svg
-    └──F5.svg
+└── assets/             # 🖼️ 5 個樓層的向量平面地圖 SVG (請確保檔名為大寫)[cite: 1, 3, 4]
+    ├── B2.svg
+    ├── F1.svg
+    ├── F2.svg
+    ├── F3.svg
+    ├── F4.svg
+    └── F5.svg

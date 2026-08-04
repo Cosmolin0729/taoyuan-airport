@@ -3,93 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>桃園國際機場 互動導覽地圖 | Taoyuan Airport Map</title>
+  <title>桃園機場室內導航與服務 | Taoyuan Airport App</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- 頂部導覽列 -->
+  <!-- 頂部標題與頁面導覽列 -->
   <header class="navbar">
     <div class="logo">
-      ✈️ <span data-i18n="app_title">桃園國際機場導覽</span>
+      ✈️ 桃園機場服務系統
     </div>
-
-    <div class="lang-select">
-      🌐 
-      <select id="langSelector">
-        <option value="zh-TW">繁體中文</option>
-        <option value="en">English</option>
-        <option value="ja">日本語</option>
-        <option value="ko">한국어</option>
-        <option value="th">ไทย</option>
-        <option value="vi">Tiếng Việt</option>
-      </select>
-    </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-page="page-map">🗺️ 室內地圖</button>
+      <button class="nav-tab" data-page="page-flights">✈️ 航班動態</button>
+      <button class="nav-tab" data-page="page-facilities">ℹ️ 設施導覽</button>
+    </nav>
   </header>
 
-  <!-- 主要內容區 -->
-  <main class="main-container">
+  <!-- ==================== 頁面 1：地圖主頁面 ==================== -->
+  <div id="page-map" class="app-page active">
+    <div class="main-container">
+      <!-- 上方控制列 -->
+      <aside class="sidebar">
+        <div class="control-group">
+          <div class="floor-buttons" id="floorButtons">
+            <button class="btn-floor" data-floor="B2">B2</button>
+            <button class="btn-floor active" data-floor="F1">1F</button>
+            <button class="btn-floor" data-floor="F2">2F</button>
+            <button class="btn-floor" data-floor="F3">3F</button>
+            <button class="btn-floor" data-floor="F4">4F</button>
+            <button class="btn-floor" data-floor="F5">5F</button>
+          </div>
+        </div>
 
-    <!-- 控制與導航側邊欄 -->
-    <aside class="controls-panel">
-      <!-- 樓層選擇 -->
-      <div class="control-group">
-        <label data-i18n="select_floor">選擇樓層</label>
-        <div class="floor-buttons" id="floorButtons">
-          <button class="btn-floor" data-floor="B2">B2</button>
-          <button class="btn-floor active" data-floor="F1">1F</button>
-          <button class="btn-floor" data-floor="F2">2F</button>
-          <button class="btn-floor" data-floor="F3">3F</button>
-          <button class="btn-floor" data-floor="F4">4F</button>
-          <button class="btn-floor" data-floor="F5">5F</button>
+        <div class="control-group">
+          <div class="nav-bar-row">
+            <div class="nav-item">
+              <select id="startNodeSelect">
+                <option value="">-- 請選擇起點 --</option>
+              </select>
+            </div>
+            <div class="nav-item">
+              <select id="endNodeSelect">
+                <option value="">-- 請選擇終點 --</option>
+              </select>
+            </div>
+            <div class="nav-item btn-group">
+              <button id="btnFindPath" class="btn-primary">開始導航</button>
+              <button id="btnClearPath" class="btn-secondary">清除路徑</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- 下方地圖區 -->
+      <main class="map-wrapper">
+        <div class="zoom-controls">
+          <button id="zoomIn" title="放大">+</button>
+          <button id="zoomOut" title="縮小">-</button>
+          <button id="zoomReset" title="重置">🔄</button>
+        </div>
+        <div id="mapContainer"></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== 頁面 2：航班動態查詢頁面 (出境/入境分流) ==================== -->
+  <div id="page-flights" class="app-page">
+    <div class="content-container">
+      <h2>✈️ 航班即時動態與指引查詢</h2>
+      <p style="color:#666; margin-bottom: 15px;">輸入航班編號，系統將自動為您比對報到櫃檯 (出境 3F) 或行李提領轉盤 (入境 1F)</p>
+      
+      <!-- 搜尋列與即時反饋區 -->
+      <div class="flight-search-bar">
+        <input type="text" id="flightInput" placeholder="請輸入航班編號 (例如: BR12、CI501、JX800)...">
+        <button id="btnSearchFlight" class="btn-primary" style="flex:0.3;">即時查詢</button>
+      </div>
+
+      <!-- 🔍 搜尋結果動態反饋卡片卡槽 -->
+      <div id="flightSearchResult"></div>
+
+      <hr style="margin: 25px 0; border:0; border-top:1px solid #eee;">
+
+      <!-- 預設常用航班清單表格 -->
+      <h3>📋 今日熱門航班快速預覽</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>類型</th>
+            <th>預計時間</th>
+            <th>航班編號</th>
+            <th>航空公司</th>
+            <th>目的地 / 來源地</th>
+            <th>指引位置 (樓層)</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="flightTableBody">
+          <!-- 由 JS 動態繪製與串接 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== 頁面 3：設施導覽頁面 ==================== -->
+  <div id="page-facilities" class="app-page">
+    <div class="content-container">
+      <h2>ℹ️ 航廈重點設施清單</h2>
+      <div class="facility-grid">
+        <div class="facility-card">
+          <h3>🛫 報到櫃檯區 (3F)</h3>
+          <p>出境大廳報到櫃檯、自助行李託運與安檢出口。</p>
+        </div>
+        <div class="facility-card">
+          <h3>🧳 入境行李提領區 (1F)</h3>
+          <p>提供 1~8 號行李轉盤與海關檢查服務。</p>
+        </div>
+        <div class="facility-card">
+          <h3>🏥 醫療中心 (1F)</h3>
+          <p>位於 1 樓南側，提供緊急醫療服務與諮詢。</p>
+        </div>
+        <div class="facility-card">
+          <h3>🚆 桃園機場捷運 (B2)</h3>
+          <p>連通台北車站與中壢市區，提供直達車與普通車。</p>
         </div>
       </div>
+    </div>
+  </div>
 
-      <hr class="divider">
-
-      <!-- 路徑導航控制項 -->
-      <div class="control-group navigation-box">
-        <h3 data-i18n="nav_title">🗺️ 路徑導航</h3>
-        
-        <label data-i18n="start_point">起點：</label>
-        <select id="startNodeSelect">
-          <option value="" data-i18n="select_start">請選擇起點</option>
-        </select>
-
-        <label data-i18n="end_point">終點：</label>
-        <select id="endNodeSelect">
-          <option value="" data-i18n="select_end">請選擇終點</option>
-        </select>
-
-        <button id="btnFindPath" class="btn-primary" data-i18n="start_nav">開始導航</button>
-        <button id="btnClearPath" class="btn-secondary" data-i18n="clear_nav">清除路線</button>
-      </div>
-
-      <!-- 緊急求助按鈕 -->
-      <div class="sos-section">
-        <button class="btn-sos" id="btnSOS" data-i18n="sos_btn">🚨 緊急求助 (SOS)</button>
-      </div>
-    </aside>
-
-    <!-- 中央地圖顯示區 -->
-    <section class="map-viewport">
-      <div class="map-container" id="mapContainer">
-        <div class="loading-text" data-i18n="loading">地圖載入中...</div>
-      </div>
-
-      <!-- 右下角縮放控制 -->
-      <div class="zoom-controls">
-        <button id="zoomIn">+</button>
-        <button id="zoomOut">-</button>
-        <button id="zoomReset">⟲</button>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- JS 載入順序：i18n -> graph -> app -->
-  <script src="js/i18n.js"></script>
+  <!-- 📜 核心腳本引入 -->
+  <script src="js/poiData.js"></script>
   <script src="js/graph.js"></script>
   <script src="js/app.js"></script>
+
 </body>
 </html>
