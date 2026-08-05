@@ -1,80 +1,77 @@
-const i18nDictionary = {
-  "zh-TW": {
-    app_title: "桃園國際機場導覽",
-    select_floor: "選擇樓層",
-    nav_title: "🗺️ 路徑導航",
-    start_point: "起點：",
-    end_point: "終點：",
-    select_start: "請選擇起點",
-    select_end: "請選擇終點",
-    start_nav: "開始導航",
-    clear_nav: "清除路線",
-    sos_btn: "🚨 緊急求助 (SOS)",
-    loading: "地圖載入中..."
-  },
-  "en": {
-    app_title: "Taoyuan Airport Guide",
-    select_floor: "Select Floor",
-    nav_title: "🗺️ Navigation",
-    start_point: "Start:",
-    end_point: "Destination:",
-    select_start: "Select Start Point",
-    select_end: "Select Destination",
-    start_nav: "Start Navigation",
-    clear_nav: "Clear Route",
-    sos_btn: "🚨 Emergency (SOS)",
-    loading: "Loading Map..."
-  },
-  "ja": {
-    app_title: "桃園国際空港ガイド",
-    select_floor: "階層を選択",
-    nav_title: "🗺️ ルート案内",
-    start_point: "出発地：",
-    end_point: "目的地：",
-    select_start: "出発地を選択",
-    select_end: "目的地を選択",
-    start_nav: "導航開始",
-    clear_nav: "ルート消去",
-    sos_btn: "🚨 緊急助け (SOS)",
-    loading: "マップ読み込み中..."
-  },
-  "ko": {
-    app_title: "타오위안 국제공항 가이드",
-    select_floor: "층 선택",
-    nav_title: "🗺️ 길찾기",
-    start_point: "출발지:",
-    end_point: "도착지:",
-    select_start: "출발지 선택",
-    select_end: "도착지 선택",
-    start_nav: "길안내 시작",
-    clear_nav: "경로 초기화",
-    sos_btn: "🚨 긴급 구조 (SOS)",
-    loading: "지도 불러오는 중..."
-  },
-  "th": {
-    app_title: "คู่มือนำทางท่าอากาศยานเถาหยวน",
-    select_floor: "เลือกชั้น",
-    nav_title: "🗺️ ระบบนำทาง",
-    start_point: "จุดเริ่มต้น:",
-    end_point: "ปลายทาง:",
-    select_start: "เลือกจุดเริ่มต้น",
-    select_end: "เลือกปลายทาง",
-    start_nav: "เริ่มนำทาง",
-    clear_nav: "ล้างเส้นทาง",
-    sos_btn: "🚨 ขอความช่วยเหลือฉุกเฉิน (SOS)",
-    loading: "กำลังโหลดแผนที่..."
-  },
-  "vi": {
-    app_title: "Hướng dẫn Sân bay Đào Viên",
-    select_floor: "Chọn tầng",
-    nav_title: "🗺️ Dẫn đường",
-    start_point: "Điểm đi:",
-    end_point: "Điểm đến:",
-    select_start: "Chọn điểm đi",
-    select_end: "Chọn điểm đến",
-    start_nav: "Bắt đầu",
-    clear_nav: "Xóa tuyến đường",
-    sos_btn: "🚨 Cấp cứu (SOS)",
-    loading: "Đang tải bản đồ..."
+// js/i18n.js - 全局多國語言翻譯引擎
+let currentLang = 'zh-TW';
+
+// 取得當前語言字典物件
+function getActiveDict() {
+  const dicts = {
+    'en': typeof i18n_en !== 'undefined' ? i18n_en : {},
+    'ja': typeof i18n_ja !== 'undefined' ? i18n_ja : {},
+    'ko': typeof i18n_ko !== 'undefined' ? i18n_ko : {},
+    'es': typeof i18n_es !== 'undefined' ? i18n_es : {},
+    'th': typeof i18n_th !== 'undefined' ? i18n_th : {},
+    'vi': typeof i18n_vi !== 'undefined' ? i18n_vi : {}
+  };
+  return dicts[currentLang] || {};
+}
+
+// 取得翻譯文字 (若無對應 key 則回傳原本文字)
+function t(key, params = {}) {
+  const dict = getActiveDict();
+  let text = dict[key] || key;
+
+  for (const p in params) {
+    text = text.replace(new RegExp(`\\{${p}\\}`, 'g'), params[p]);
   }
-};
+  return text;
+}
+
+// 執行語言切換主邏輯
+function applyLanguage(lang) {
+  if (!lang) return;
+  currentLang = lang;
+  const dict = getActiveDict();
+
+  // 1. 替換帶有 data-i18n 屬性的文字 (使用 textContent 避免刪除圖示 span)
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    
+    if (lang === 'zh-TW') {
+      if (el.getAttribute('data-zh')) {
+        el.textContent = el.getAttribute('data-zh');
+      }
+    } else if (dict[key]) {
+      if (!el.getAttribute('data-zh')) {
+        el.setAttribute('data-zh', el.textContent.trim());
+      }
+      el.textContent = dict[key];
+    }
+  });
+
+  // 2. 替換搜尋框 Placeholder
+  const flightInput = document.getElementById('flightInput');
+  if (flightInput) {
+    if (lang !== 'zh-TW' && dict['inputFlightPlaceholder']) {
+      if (!flightInput.getAttribute('data-zh-ph')) {
+        flightInput.setAttribute('data-zh-ph', flightInput.placeholder);
+      }
+      flightInput.placeholder = dict['inputFlightPlaceholder'];
+    } else if (lang === 'zh-TW' && flightInput.getAttribute('data-zh-ph')) {
+      flightInput.placeholder = flightInput.getAttribute('data-zh-ph');
+    }
+  }
+
+  // 3. 重繪地圖 POI 以更新地圖標註點擊彈窗
+  if (typeof renderFloorPOIs === 'function' && typeof currentFloor !== 'undefined') {
+    renderFloorPOIs(formatFloorName(currentFloor));
+  }
+}
+
+// 自動綁定下拉選單監聽事件
+document.addEventListener('DOMContentLoaded', () => {
+  const langSelect = document.getElementById('langSelect');
+  if (langSelect) {
+    langSelect.addEventListener('change', (e) => {
+      applyLanguage(e.target.value);
+    });
+  }
+});

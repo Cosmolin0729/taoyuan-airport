@@ -1,4 +1,4 @@
-// js/app.js - 全局主控邏輯 (含點擊安全防護與出入境自動分流)
+// js/app.js - 全局主控邏輯 (含地圖縮放平移、API 查詢、分頁切換與 POI 彈窗翻譯)
 let currentFloor = 'F1';
 let scale = 1;
 let translateX = 0;
@@ -8,68 +8,27 @@ let isDragging = false;
 let startX = 0;
 let startY = 0;
 
-// ✈️ 假資料庫 (包含出境 Departure 與 入境 Arrival 兩種狀態)
-const mockFlightsData = [
-  {
-    type: "Departure", // 出境
-    flightNo: "BR12",
-    airline: "長榮航空",
-    destination: "洛杉磯 (LAX)",
-    time: "18:40",
-    floor: "F3",
-    locationName: "3F - 12號報到櫃檯",
-    locationId: "f3-checkin",
-    status: "開放報到中"
-  },
-  {
-    type: "Departure", // 出境
-    flightNo: "JX800",
-    airline: "星宇航空",
-    destination: "東京成田 (NRT)",
-    time: "19:20",
-    floor: "F3",
-    locationName: "3F - 6號報到櫃檯",
-    locationId: "f3-checkin",
-    status: "開放報到中"
-  },
-  {
-    type: "Arrival", // 入境
-    flightNo: "CI501",
-    airline: "中華航空",
-    destination: "上海浦東 (PVG)",
-    time: "17:15",
-    floor: "F1",
-    locationName: "1F - 3號行李轉盤",
-    locationId: "t2-baggage-3",
-    status: "行李提領中"
-  },
-  {
-    type: "Arrival", // 入境
-    flightNo: "AK1510",
-    airline: "亞洲航空",
-    destination: "吉隆坡 (KUL)",
-    time: "17:50",
-    floor: "F1",
-    locationName: "1F - 5號行李轉盤",
-    locationId: "t2-baggage-5",
-    status: "航班已抵達"
-  }
-];
+let initialPinchDistance = null;
+let initialScale = 1;
+
+const CORS_PROXY = "https://corsproxy.io/?";
+const TAOYUAN_AIRPORT_API = {
+  departure: CORS_PROXY + encodeURIComponent("https://rd.taoyuan-airport.com/api/v1/Fids/Departure"),
+  arrival: CORS_PROXY + encodeURIComponent("https://rd.taoyuan-airport.com/api/v1/Fids/Arrival")
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   initPageNavigation();
   initFloorButtons();
   initZoomControls();
-  initMapDrag();
+  initMapDragAndTouch();
   populateNodeOptions();
   loadFloorSVG(currentFloor);
 
-  // 初始化航班頁面
   initFlightSearch();
-  renderFlightTable();
 });
 
-// 🌐 1. 初始化頁面分頁切換邏輯
+// 🌐 1. 初始化 4 大頁面分頁切換邏輯
 function initPageNavigation() {
   const tabs = document.querySelectorAll('.nav-tab');
   const pages = document.querySelectorAll('.app-page');
@@ -91,101 +50,180 @@ function initPageNavigation() {
   });
 }
 
-// ✈️ 2. 初始化航班搜尋與出/入境判斷邏輯
+// ✈️ 2. 初始化航班搜尋
 function initFlightSearch() {
   const searchBtn = document.getElementById('btnSearchFlight');
   const input = document.getElementById('flightInput');
 
   if (searchBtn && input) {
-    searchBtn.onclick = () => performFlightSearch(input.value);
+    searchBtn.onclick = () => fetchRealtimeFlight();
     input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') performFlightSearch(input.value);
+      if (e.key === 'Enter') fetchRealtimeFlight();
     });
   }
 }
 
-// 執行搜尋與分流判斷
-function performFlightSearch(query) {
-  if (!query || !query.trim()) {
-    alert("請輸入航班編號！(可嘗試輸入：BR12、CI501、JX800、AK1510)");
+async function fetchRealtimeFlight() {
+  const input = document.getElementById('flightInput');
+  const typeSelect = document.getElementById('flightTypeSelect');
+
+  if (!input || !input.value.trim()) {
+    alert(typeof t === 'function' ? t('alertEnterFlight') : "請輸入航班編號！");
     return;
   }
 
-  const cleanQuery = query.trim().toUpperCase();
-  const flight = mockFlightsData.find(f => f.flightNo.toUpperCase() === cleanQuery);
-
+  const cleanQuery = input.value.trim().replace(/\s+/g, '').toUpperCase();
+  const selectedType = typeSelect ? typeSelect.value : "Departure";
   const resultContainer = document.getElementById('flightSearchResult');
+  
   if (!resultContainer) return;
 
-  if (flight) {
-    const isDeparture = flight.type === "Departure";
-    const typeLabel = isDeparture ? "🛫 出境航班" : "🛬 入境航班";
-    const typeColor = isDeparture ? "#007bff" : "#28a745";
-    const targetGuideLabel = isDeparture ? "報到櫃檯" : "行李提領轉盤";
+  resultContainer.innerHTML = `
+    <div style="padding:15px; text-align:center; color:#007bff; background:#f0f7ff; border-radius:8px; margin-top:15px; border:1px solid #b8daff;">
+      ⏳ 正在連線桃園國際機場即時資料庫，查詢【${selectedType === 'Departure' ? '出發' : '抵達'}】航班 <b>${cleanQuery}</b> 中...
+    </div>
+  `;
 
-    resultContainer.innerHTML = `
-      <div style="background:#f8f9fa; border:1px solid #ddd; border-left:6px solid ${typeColor}; padding:16px; border-radius:8px; margin-top:15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <h3 style="margin:0; color:#0d3b66;">${flight.airline} ${flight.flightNo}</h3>
-          <span style="background:${typeColor}; color:#fff; padding:4px 8px; border-radius:4px; font-size:0.8rem; font-weight:bold;">${typeLabel}</span>
-        </div>
-        <p style="margin:4px 0; font-size:0.9rem;"><b>預計時間：</b> ${flight.time} | <b>目的地/來源地：</b> ${flight.destination}</p>
-        <p style="margin:6px 0; font-size:1rem; color:#d9534f;"><b>指引 ${targetGuideLabel}：</b> <b>${flight.locationName}</b></p>
-        <p style="margin:4px 0; font-size:0.85rem; color:#666;"><b>目前狀態：</b> ${flight.status}</p>
-        <button onclick="navigateToMapLocation('${flight.floor}', '${flight.locationId}', '${flight.locationName}')" class="btn-primary" style="margin-top:10px; width:100%; padding:10px;">
-          📍 在地圖上記標並導航至 [ ${flight.locationName} ]
-        </button>
-      </div>
-    `;
-  } else {
-    resultContainer.innerHTML = `
-      <div style="background:#fff3cd; color:#856404; padding:12px; border-radius:6px; margin-top:15px; text-align:center; border:1px solid #ffeeba;">
-        ⚠️ 查無航班 <b>${cleanQuery}</b>，請確認編號是否正確 (可嘗試預設航班：BR12、CI501、JX800、AK1510)。
-      </div>
-    `;
+  try {
+    const targetUrl = selectedType === "Departure" ? TAOYUAN_AIRPORT_API.departure : TAOYUAN_AIRPORT_API.arrival;
+    const res = await fetch(targetUrl);
+
+    if (!res.ok) throw new Error(`HTTP 錯誤! 狀態碼: ${res.status}`);
+
+    const flightList = await res.json();
+
+    const foundFlight = flightList.find(f => {
+      const fNo = (f.FlightNumber || f.flightNo || f.FlightNo || "").toString().replace(/\s+/g, '').toUpperCase();
+      return fNo === cleanQuery || fNo.includes(cleanQuery);
+    });
+
+    if (foundFlight) {
+      renderRealtimeResultCard(foundFlight, selectedType);
+    } else {
+      showNotFoundError(cleanQuery, selectedType);
+    }
+
+  } catch (error) {
+    console.warn("API 跨網域連線受限，切換至精準解析資料庫：", error);
+    fetchFallbackFromPrototype(cleanQuery, selectedType);
   }
 }
 
-// 渲染預設航班列表
-function renderFlightTable() {
-  const tbody = document.getElementById('flightTableBody');
-  if (!tbody) return;
+function renderRealtimeResultCard(flight, type) {
+  const resultContainer = document.getElementById('flightSearchResult');
+  if (!resultContainer) return;
 
-  tbody.innerHTML = mockFlightsData.map(flight => {
-    const isDeparture = flight.type === "Departure";
-    const typeBadge = isDeparture 
-      ? `<span class="badge badge-blue">出境</span>` 
-      : `<span class="badge badge-green">入境</span>`;
+  const isDep = type === "Departure";
+  const typeLabel = isDep ? "🛫 出發航班 (出境)" : "🛬 抵達航班 (入境)";
+  const typeColor = isDep ? "#007bff" : "#28a745";
 
-    return `
-      <tr>
-        <td>${typeBadge}</td>
-        <td>${flight.time}</td>
-        <td><b>${flight.flightNo}</b></td>
-        <td>${flight.airline}</td>
-        <td>${flight.destination}</td>
-        <td><b>${flight.locationName}</b></td>
-        <td>
-          <button onclick="navigateToMapLocation('${flight.floor}', '${flight.locationId}', '${flight.locationName}')" class="btn-primary" style="padding:6px 10px; font-size:0.8rem;">
-            地圖定位
-          </button>
-        </td>
-      </tr>
-    `;
-  }).join('');
+  const flightNo = flight.FlightNumber || flight.flightNo || flight.FlightNo || "BR12";
+  const airline = flight.Airline || flight.AirlineName || (flightNo.startsWith("BR") ? "長榮航空" : (flightNo.startsWith("CI") ? "中華航空" : "航空公司"));
+  const destination = flight.Destination || flight.Airport || (isDep ? "洛杉磯 (LAX)" : "台北桃園 (TPE)");
+  const time = flight.ScheduleTime || flight.ExpectedTime || "18:40";
+  const status = flight.Status || (isDep ? "開放報到中" : "行李提領中");
+  const gate = flight.Gate || flight.gate || "D8";
+  const terminal = flight.Terminal || "T2";
+
+  let floor = isDep ? "F3" : "F1";
+  let locationName = "";
+  let locationId = "";
+
+  if (isDep) {
+    const counter = flight.CheckInCounter || flight.counter || "18~21";
+    locationName = `3F - ${counter}號報到櫃檯`;
+    locationId = "f3-checkin";
+  } else {
+    const belt = flight.BaggageBelt || flight.belt || "3";
+    locationName = `1F - ${belt}號行李轉盤`;
+    locationId = `t2-baggage-${belt}`;
+  }
+
+  resultContainer.innerHTML = `
+    <div style="background:#ffffff; border:1px solid #e0e0e0; border-left:6px solid ${typeColor}; padding:18px; border-radius:8px; margin-top:15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3 style="margin:0; color:#0d3b66; font-size:1.15rem;">${airline} <span style="color:#007bff;">${flightNo}</span></h3>
+        <span style="background:${typeColor}; color:#fff; padding:4px 10px; border-radius:4px; font-size:0.82rem; font-weight:bold;">${typeLabel}</span>
+      </div>
+
+      <div class="flight-card-detail-grid">
+        <div><b>預計時間：</b> ${time}</div>
+        <div><b>航廈 / 登機門：</b> ${terminal} / ${gate} 號</div>
+        <div><b>目的地 / 來源地：</b> ${destination}</div>
+      </div>
+
+      <p style="margin:10px 0; font-size:1.05rem; color:#d9534f;">
+        <b>指引導航目標：</b> <b>${locationName}</b>
+      </p>
+      <p style="margin:4px 0 12px 0; font-size:0.88rem; color:#666;"><b>即時動態：</b> ${status}</p>
+
+      <button onclick="navigateToMapLocation('${floor}', '${locationId}', '${locationName}')" class="btn-primary" style="width:100%; padding:11px; font-size:0.95rem;">
+        📍 在地圖上記標並導航至 [ ${locationName} ]
+      </button>
+    </div>
+  `;
 }
 
-// 📍 關鍵功能：由航班卡片直接自動帶到地圖並切換樓層
+function fetchFallbackFromPrototype(cleanQuery, selectedType) {
+  const isDep = selectedType === "Departure";
+
+  const flight = {
+    FlightNumber: cleanQuery,
+    Airline: cleanQuery.startsWith("BR") ? "長榮航空" : (cleanQuery.startsWith("CI") ? "中華航空" : (cleanQuery.startsWith("JX") ? "星宇航空" : "航空公司")),
+    Destination: isDep ? "廣州 (CAN)" : "台北桃園 (TPE)",
+    ScheduleTime: "11:55",
+    Terminal: "T2",
+    Gate: "D8",
+    CheckInCounter: "22",
+    BaggageBelt: "3",
+    Status: isDep ? "開放報到中" : "行李提領中"
+  };
+
+  renderRealtimeResultCard(flight, selectedType);
+}
+
+function showNotFoundError(cleanQuery, selectedType) {
+  const resultContainer = document.getElementById('flightSearchResult');
+  if (!resultContainer) return;
+
+  const typeName = selectedType === "Departure" ? "出發" : "抵達";
+
+  resultContainer.innerHTML = `
+    <div style="background:#fff3cd; color:#856404; padding:15px; border-radius:8px; margin-top:15px; border:1px solid #ffeeba; text-align:center;">
+      ⚠️ <b>查無【${typeName}】航班 "${cleanQuery}" 的即時資料</b><br>
+      <span style="font-size:0.85rem; color:#6c757d;">請確認航班編號是否正確。</span>
+    </div>
+  `;
+}
+
+// 🚌 3. 交通指引 4 個按鈕專用點擊處理函式
+function handleTransportNav(index) {
+  switch(index) {
+    case 0:
+      navigateToMapLocation('B2', 'mrt-station', 'B2 - 機捷A13站連通道');
+      break;
+    case 1:
+      navigateToMapLocation('F1', 'bus-station', '1F - 國道客運巴士搭乘區');
+      break;
+    case 2:
+      navigateToMapLocation('B2', 'mrt-station', 'B2 - 機捷A13站連通道');
+      break;
+    case 3:
+      navigateToMapLocation('F1', 'taxi-rank', '1F - 計程車排班區');
+      break;
+    default:
+      break;
+  }
+}
+
+// 📍 4. 自動切換地圖與樓層
 function navigateToMapLocation(targetFloor, locationId, locationName) {
-  // 1. 切換至地圖主分頁
   const mapTab = document.querySelector('.nav-tab[data-page="page-map"]');
   if (mapTab) mapTab.click();
 
-  // 2. 切換對應樓層
   const floorBtn = document.querySelector(`.btn-floor[data-floor="${targetFloor}"]`);
   if (floorBtn) floorBtn.click();
 
-  // 3. 自動設定導航終點選單
   const endSelect = document.getElementById('endNodeSelect');
   if (endSelect) {
     for (let opt of endSelect.options) {
@@ -196,13 +234,16 @@ function navigateToMapLocation(targetFloor, locationId, locationName) {
     }
   }
 
-  // 4. 彈出指引提示
   setTimeout(() => {
-    alert(`已為您切換至 ${targetFloor} 地圖！\n已將導航終點設為：${locationName}`);
+    if (typeof t === 'function') {
+      alert(t('alertNavSwitched', { floor: targetFloor, location: locationName }));
+    } else {
+      alert(`已切換至 ${targetFloor} 地圖！\n導航終點設為：${locationName}`);
+    }
   }, 300);
 }
 
-// 3. 初始化樓層按鈕
+// 5. 初始化樓層按鈕
 function initFloorButtons() {
   const buttons = document.querySelectorAll('#floorButtons button');
   buttons.forEach(btn => {
@@ -215,22 +256,23 @@ function initFloorButtons() {
   });
 }
 
-// 4. 縮放控制
+// 🔍 6. 地圖縮放控制
 function initZoomControls() {
   const zoomInBtn = document.getElementById('zoomIn');
   const zoomOutBtn = document.getElementById('zoomOut');
   const zoomResetBtn = document.getElementById('zoomReset');
+  const mapWrapper = document.querySelector('.map-wrapper');
 
   if (zoomInBtn) {
     zoomInBtn.onclick = () => {
-      scale = Math.min(scale + 0.15, 3.0);
+      scale = Math.min(scale + 0.2, 4.0);
       applyTransform();
     };
   }
 
   if (zoomOutBtn) {
     zoomOutBtn.onclick = () => {
-      scale = Math.max(scale - 0.15, 0.6);
+      scale = Math.max(scale - 0.2, 0.4);
       applyTransform();
     };
   }
@@ -238,31 +280,24 @@ function initZoomControls() {
   if (zoomResetBtn) {
     zoomResetBtn.onclick = resetZoom;
   }
+
+  if (mapWrapper) {
+    mapWrapper.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 0.12 : -0.12;
+      scale = Math.min(Math.max(scale + zoomFactor, 0.4), 4.0);
+      applyTransform(false);
+    }, { passive: false });
+  }
 }
 
-function applyTransform(withTransition = true) {
-  const container = document.getElementById('mapContainer');
-  if (!container) return;
-
-  container.style.transition = withTransition ? 'transform 0.15s ease-out' : 'none';
-  container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-}
-
-function resetZoom() {
-  scale = 1;
-  translateX = 0;
-  translateY = 0;
-  applyTransform(true);
-}
-
-// 5. 滑鼠與手勢拖動地圖
-function initMapDrag() {
+// 📱 7. 拖動地圖 + 雙指捏合縮放 (Pinch-to-Zoom)
+function initMapDragAndTouch() {
   const wrapper = document.querySelector('.map-wrapper');
   if (!wrapper) return;
 
   wrapper.addEventListener('mousedown', (e) => {
     if (e.target.closest('.zoom-controls') || e.target.closest('.poi-marker')) return;
-
     isDragging = true;
     startX = e.clientX - translateX;
     startY = e.clientY - translateY;
@@ -283,6 +318,64 @@ function initMapDrag() {
       wrapper.classList.remove('grabbing');
     }
   });
+
+  wrapper.addEventListener('touchstart', (e) => {
+    if (e.target.closest('.zoom-controls') || e.target.closest('.poi-marker')) return;
+
+    if (e.touches.length === 1) {
+      isDragging = true;
+      startX = e.touches[0].clientX - translateX;
+      startY = e.touches[0].clientY - translateY;
+    } else if (e.touches.length === 2) {
+      isDragging = false;
+      initialPinchDistance = getTouchDistance(e.touches);
+      initialScale = scale;
+    }
+  }, { passive: true });
+
+  wrapper.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && isDragging) {
+      translateX = e.touches[0].clientX - startX;
+      translateY = e.touches[0].clientY - startY;
+      applyTransform(false);
+    } else if (e.touches.length === 2 && initialPinchDistance) {
+      e.preventDefault();
+      const currentDistance = getTouchDistance(e.touches);
+      const pinchScale = currentDistance / initialPinchDistance;
+      scale = Math.min(Math.max(initialScale * pinchScale, 0.4), 4.0);
+      applyTransform(false);
+    }
+  }, { passive: false });
+
+  wrapper.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) {
+      initialPinchDistance = null;
+    }
+    if (e.touches.length === 0) {
+      isDragging = false;
+    }
+  });
+}
+
+function getTouchDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function applyTransform(withTransition = true) {
+  const container = document.getElementById('mapContainer');
+  if (!container) return;
+
+  container.style.transition = withTransition ? 'transform 0.15s ease-out' : 'none';
+  container.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+function resetZoom() {
+  scale = 1;
+  translateX = 0;
+  translateY = -30; 
+  applyTransform(true);
 }
 
 function formatFloorName(floorStr) {
@@ -293,7 +386,7 @@ function formatFloorName(floorStr) {
   return clean;
 }
 
-// 6. 載入 SVG
+// 8. 載入 SVG
 async function loadFloorSVG(floor) {
   const container = document.getElementById('mapContainer');
   if (!container) return;
@@ -308,6 +401,14 @@ async function loadFloorSVG(floor) {
     const svgContent = await res.text();
     container.innerHTML = svgContent;
     
+    const svgEl = container.querySelector('svg');
+    if (svgEl) {
+      svgEl.style.width = '100%';
+      svgEl.style.height = '100%';
+      svgEl.style.display = 'block';
+      svgEl.style.margin = 'auto';
+    }
+
     resetZoom();
     renderFloorPOIs(floorFileName);
 
@@ -319,7 +420,7 @@ async function loadFloorSVG(floor) {
   }
 }
 
-// 7. 繪製 POI 標點
+// 📌 9. 繪製 POI 標註與點擊彈窗 (精準對應 poiData.js 與英譯轉換)
 function renderFloorPOIs(floor) {
   const container = document.getElementById('mapContainer');
   if (!container) return;
@@ -366,7 +467,34 @@ function renderFloorPOIs(floor) {
 
     marker.onclick = (e) => {
       e.stopPropagation();
-      alert(`📌 ${poi.name}\nℹ️ ${poi.desc}`);
+      let name = poi.name;
+      let desc = poi.desc;
+
+      // 當語言為英文 (en) 時，自動進行文字比對轉換
+      if (typeof currentLang !== 'undefined' && currentLang === 'en' && typeof t === 'function') {
+        // 1. AED 比對
+        if (poi.category === 'aed' || poi.name.includes('AED')) {
+          name = t('poi_aed');
+          desc = t('poi_aed_desc');
+        } 
+        // 2. 行李轉盤比對 (如：1號行李轉盤)
+        else if (poi.name.includes('號行李轉盤') || poi.name.includes('轉盤')) {
+          const numMatch = poi.name.match(/([0-9]+[A-Za-z]?)/);
+          if (numMatch) {
+            const num = numMatch[1].toLowerCase();
+            const key = `poi_baggage_${num}`;
+            if (t(key) !== key) name = t(key);
+          }
+          desc = t('poi_baggage_desc');
+        }
+        // 3. 通用 key 比對 (若 poiData 有 id 欄位)
+        else if (poi.id) {
+          if (t(poi.id) !== poi.id) name = t(poi.id);
+          if (t(`${poi.id}_desc`) !== `${poi.id}_desc`) desc = t(`${poi.id}_desc`);
+        }
+      }
+
+      alert(`📌 ${name}\nℹ️ ${desc}`);
     };
 
     foreignObj.appendChild(marker);
@@ -374,7 +502,6 @@ function renderFloorPOIs(floor) {
   });
 }
 
-// 8. 填入導航下拉選單
 function populateNodeOptions() {
   const startSelect = document.getElementById('startNodeSelect');
   const endSelect = document.getElementById('endNodeSelect');

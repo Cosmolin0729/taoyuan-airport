@@ -1,0 +1,77 @@
+// js/locales/ja.js
+const i18n_ja = {
+  // ✈️ 標題與右上角 4 大功能按鈕
+  navTitle: '✈️ 桃園空港交通ガイド',
+  tabMap: '館内マップ',
+  tabFlights: 'フライト動向',
+  tabFacilities: '施設案内',
+  tabTransport: '交通アクセス',
+
+  // 🗺️ 地圖導覽選單
+  selectStart: '-- 出發地を選択 --',
+  selectEnd: '-- 目的地を選択 --',
+  btnStartNav: 'ナビ開始',
+  btnClearPath: 'ルート消去',
+
+  // ✈️ 航班動態頁面
+  flightHeader: '✈️ リアルタイムフライト検索',
+  flightSubHeader: '便名を入力すると、チェックインカウンター(3F)や手荷物受取所(1F)へリアルタイムで案内します！',
+  optDeparture: '🛫 ご出発 (国際線)',
+  optArrival: '🛬 ご到着 (国際線)',
+  inputFlightPlaceholder: '便名を入力 (例: BR12, CI501)...',
+  btnSearch: '検索',
+
+  // ℹ️ 航廈設施頁面
+  facilityHeader: 'ℹ️ 空港の主要施設',
+  facCheckinTitle: '🛫 チェックインカウンター (3F)',
+  facCheckinDesc: '搭乗手続き、自動手荷物預け入れ、保安検査場。',
+  facBaggageTitle: '🧳 手荷物受取エリア (1F)',
+  facBaggageDesc: 'ターンテーブル1〜8番および税関検査。',
+  facMedicalTitle: '🏥 救急医療センター (1F)',
+  facMedicalDesc: '1階南側に位置し、緊急醫療や健康相談に対応。',
+  facMrtTitle: '🚆 桃園機場捷運 (B2)',
+  facMrtDesc: '台北駅および中壢方面へ接続（直達車・普通車）。',
+
+  // 🚌 交通指引頁面
+  transHeader: '🚌 桃園国際空港へのアクセス',
+  transSubHeader: 'ボタンをクリックするとマップ上に乗り場が表示されます：',
+  transMrtTitle: '🚆 桃園機場捷運 (Airport MRT)',
+  transMrtDesc1: '<b>台北駅 ➔ 空港：</b>直行便で約39分、運賃 $150 TWD。',
+  transMrtDesc2: '乗り場：第1ターミナル B1 (A12) / 第2ターミナル B2 (A13)',
+  btnNavMrt: '📍 MRT乗り場を表示 (B2)',
+  transBusTitle: '🚌 高速バス / 空港バス',
+  transBusDesc1: '<b>國光バス 1819：</b>台北駅直行、24時間運行。',
+  transBusDesc2: '<b>長榮バス 5203A：</b>台北市内 / 松山空港。',
+  transBusDesc3: '<b>大有バス 1960/1961：</b>市府転運站 / 西門町。',
+  transBusDesc4: '<b>統聯バス 1627：</b>中壢乗換駅。',
+  transBusDesc5: '乗り場：1階到着ロビーバス乗り場',
+  btnNavBus: '📍 バス乗り場を表示 (1F)',
+  transHsrTitle: '🚄 台湾新幹線 (高鐵) + MRT乗換',
+  transHsrDesc1: '<b>高鐵桃園駅</b>で下車し、MRTに乗り換えて約15分。',
+  transHsrDesc2: '中南部からのアクセスに最適。',
+  btnNavHsr: '📍 新幹線乗り換えを表示 (B2)',
+  transTaxiTitle: '🚕 タクシー乗り場',
+  transTaxiDesc1: '<b>タクシー：</b>24時間対応、メーター制。',
+  transTaxiDesc2: '乗り場：1階到着ロビー外側',
+  btnNavTaxi: '📍 タクシー乗り場を表示 (1F)',
+
+  // 💬 系統彈窗提示與 POI 設施
+  alertEnterFlight: '便名を入力してください！',
+  alertNavSwitched: '{floor} マップに切り替えました！\n目的地：{location}',
+  poi_baggage_1: '1号手荷物ターンテーブル',
+  poi_baggage_2: '2号手荷物ターンテーブル',
+  poi_baggage_3: '3号手荷物ターンテーブル',
+  poi_baggage_4: '4号手荷物ターンテーブル',
+  poi_baggage_5: '5号手荷物ターンテーブル',
+  poi_baggage_6: '6号手荷物ターンテーブル',
+  poi_baggage_7b: '7B号手荷物ターンテーブル',
+  poi_baggage_8a: '8A号手荷物ターンテーブル',
+  poi_baggage_desc: '到着旅客手荷物受取エリア',
+  poi_aed: '自動体外式除細動器 (AED)',
+  poi_aed_desc: '緊急救命器具',
+  poi_meeting_north: '北側ミーティングポイント',
+  poi_meeting_south: '南側ミーティングポイント',
+  poi_meeting_desc: '到着客出迎え集合場所',
+  poi_medical_center: '医療センター',
+  poi_medical_center_desc: '緊急医療および診療相談に対応'
+};
