@@ -1,5 +1,5 @@
 /* ==========================================================================
-   桃園國際機場室內導覽與服務系統 - 全局透視與手機橫向滑動優化樣式表 (style.css)
+   桃園國際機場室內導覽與服務系統 - 全局透視與手機橫向滑動修復樣式表 (style.css)
    ========================================================================== */
 
 /* --- 1. 全局基礎與全頁面背景圖 --- */
@@ -23,32 +23,31 @@ body {
               url('https://images.unsplash.com/photo-1542296332-2e4473faf563?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
 }
 
-/* --- 2. 頂部導覽列 (Navbar - 徹底修復手機觸控滑動) --- */
+/* --- 2. 頂部導覽列 (手機觸控滑動終極修復版) --- */
 .navbar {
   height: 60px;
-  background: rgba(13, 59, 102, 0.85);
+  background: rgba(13, 59, 102, 0.9);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: #ffffff;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  z-index: 20;
+  z-index: 100; /* 提高層級，確保不被下方地圖觸控層干擾 */
   flex-shrink: 0;
-  width: 100%;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
 .navbar .logo {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 6px;
-  letter-spacing: 0.5px;
+  gap: 4px;
   flex-shrink: 0; /* 標題絕不壓縮 */
   margin-right: 6px;
 }
@@ -57,39 +56,43 @@ body {
   display: flex;
   align-items: center;
   height: 100%;
-  flex: 1; /* 佔滿右側所有剩餘空間 */
-  min-width: 0 !important; /* 🔥 關鍵：解開 Flex 寬度限制，允許內部溢出產生滾動條 */
+  flex: 1;
+  min-width: 0 !important; /* 解開 Flex 寬度鎖，允許內部內容溢出產生滾動 */
+  width: 100%;
   overflow: hidden;
 }
 
 .nav-tabs {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   height: 100%;
   align-items: center;
   width: 100%;
   
-  /* 🔥 手機滑動核心設定 */
-  overflow-x: auto !important;             /* 強制開啟橫向滾動 */
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;       /* iOS 手指順暢慣性滑動 */
-  touch-action: pan-x !important;          /* 允許 Touch 手勢橫向拖動 */
+  /* 手機滑動核心設定 */
+  overflow-x: scroll !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important; /* iOS 必備滑動屬性 */
+  touch-action: pan-x !important; /* 強制把手機觸控手勢設定為橫向滾動 */
   
-  /* 隱藏原生滾動條，保持頁面美觀 */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  /* 讓最右邊的選項滑過來時不會被切掉，預留內邊距 */
+  padding-right: 16px !important;
+  
+  /* 隱藏滾動條 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .nav-tabs::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
 .nav-tab {
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.85);
-  padding: 0 12px;
-  font-size: 0.88rem;
+  padding: 0 10px;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -101,7 +104,10 @@ body {
   transition: all 0.25s ease;
   height: 100%;
   border-bottom: 3px solid transparent;
-  flex-shrink: 0 !important; /* 🔥 關鍵：強制按鈕維持固定寬度，防止手機畫面上被擠壓 */
+  
+  /* 強制按鈕與圖示保持固定寬度，絕對不被螢幕寬度擠壓 */
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
 }
 
 .nav-tab:hover {
@@ -116,24 +122,27 @@ body {
 }
 
 .tab-icon {
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
-/* 🌐 語言選擇器 (輕巧精緻版) */
+/* 🌐 語言選擇器 */
 .lang-select {
-  padding: 3px 6px;
+  padding: 2px 6px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(13, 59, 102, 0.85);
+  background: rgba(13, 59, 102, 0.9);
   color: #ffffff;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   outline: none;
-  margin-left: 4px;
-  height: 30px;
-  max-width: 90px;
+  margin-left: 2px;
+  height: 28px;
+  max-width: 85px;
   white-space: nowrap;
+  
+  /* 確保語言選單也是獨立不壓縮卡片 */
+  flex: 0 0 auto !important;
   flex-shrink: 0 !important;
   transition: all 0.2s ease;
   text-align: center;
