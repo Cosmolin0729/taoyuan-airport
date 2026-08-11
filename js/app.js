@@ -1,4 +1,4 @@
-// js/app.js - 全局主控邏輯 (含地圖縮放平移、API 查詢、分頁切換與 POI 彈窗翻譯)
+// js/app.js - 全局主控邏輯 (含手機漢堡選單控制)
 let currentFloor = 'F1';
 let scale = 1;
 let translateX = 0;
@@ -19,6 +19,7 @@ const TAOYUAN_AIRPORT_API = {
 
 document.addEventListener('DOMContentLoaded', () => {
   initPageNavigation();
+  initHamburgerMenu();
   initFloorButtons();
   initZoomControls();
   initMapDragAndTouch();
@@ -28,10 +29,24 @@ document.addEventListener('DOMContentLoaded', () => {
   initFlightSearch();
 });
 
-// 🌐 1. 初始化 4 大頁面分頁切換邏輯
+// 📱 初始化漢堡選單向下展開/收合
+function initHamburgerMenu() {
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const navMenu = document.getElementById('navMenu');
+
+  if (hamburgerBtn && navMenu) {
+    hamburgerBtn.onclick = () => {
+      hamburgerBtn.classList.toggle('active');
+      navMenu.classList.toggle('open');
+    };
+  }
+}
+
 function initPageNavigation() {
   const tabs = document.querySelectorAll('.nav-tab');
   const pages = document.querySelectorAll('.app-page');
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const navMenu = document.getElementById('navMenu');
 
   tabs.forEach(tab => {
     tab.onclick = () => {
@@ -46,11 +61,16 @@ function initPageNavigation() {
           page.classList.remove('active');
         }
       });
+
+      // 📱 點選分頁後自動收合手機選單
+      if (navMenu && navMenu.classList.contains('open')) {
+        navMenu.classList.remove('open');
+        if (hamburgerBtn) hamburgerBtn.classList.remove('active');
+      }
     };
   });
 }
 
-// ✈️ 2. 初始化航班搜尋
 function initFlightSearch() {
   const searchBtn = document.getElementById('btnSearchFlight');
   const input = document.getElementById('flightInput');
@@ -140,7 +160,7 @@ function renderRealtimeResultCard(flight, type) {
   }
 
   resultContainer.innerHTML = `
-    <div style="background:#ffffff; border:1px solid #e0e0e0; border-left:6px solid ${typeColor}; padding:18px; border-radius:8px; margin-top:15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+    <div style="background:#ffffff; border:1px solid #e0e0e0; border-left:6px solid ${typeColor}; padding:18px; border-radius:8px; margin-top:15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color:#333;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <h3 style="margin:0; color:#0d3b66; font-size:1.15rem;">${airline} <span style="color:#007bff;">${flightNo}</span></h3>
         <span style="background:${typeColor}; color:#fff; padding:4px 10px; border-radius:4px; font-size:0.82rem; font-weight:bold;">${typeLabel}</span>
@@ -158,7 +178,7 @@ function renderRealtimeResultCard(flight, type) {
       <p style="margin:4px 0 12px 0; font-size:0.88rem; color:#666;"><b>即時動態：</b> ${status}</p>
 
       <button onclick="navigateToMapLocation('${floor}', '${locationId}', '${locationName}')" class="btn-primary" style="width:100%; padding:11px; font-size:0.95rem;">
-        📍 在地圖上記標並導航至 [ ${locationName} ]
+        📍 在地圖上看標並導航至 [ ${locationName} ]
       </button>
     </div>
   `;
@@ -196,7 +216,6 @@ function showNotFoundError(cleanQuery, selectedType) {
   `;
 }
 
-// 🚌 3. 交通指引 4 個按鈕專用點擊處理函式
 function handleTransportNav(index) {
   switch(index) {
     case 0:
@@ -216,7 +235,6 @@ function handleTransportNav(index) {
   }
 }
 
-// 📍 4. 自動切換地圖與樓層
 function navigateToMapLocation(targetFloor, locationId, locationName) {
   const mapTab = document.querySelector('.nav-tab[data-page="page-map"]');
   if (mapTab) mapTab.click();
@@ -243,7 +261,6 @@ function navigateToMapLocation(targetFloor, locationId, locationName) {
   }, 300);
 }
 
-// 5. 初始化樓層按鈕
 function initFloorButtons() {
   const buttons = document.querySelectorAll('#floorButtons button');
   buttons.forEach(btn => {
@@ -256,7 +273,6 @@ function initFloorButtons() {
   });
 }
 
-// 🔍 6. 地圖縮放控制
 function initZoomControls() {
   const zoomInBtn = document.getElementById('zoomIn');
   const zoomOutBtn = document.getElementById('zoomOut');
@@ -291,7 +307,6 @@ function initZoomControls() {
   }
 }
 
-// 📱 7. 拖動地圖 + 雙指捏合縮放 (Pinch-to-Zoom)
 function initMapDragAndTouch() {
   const wrapper = document.querySelector('.map-wrapper');
   if (!wrapper) return;
@@ -386,7 +401,6 @@ function formatFloorName(floorStr) {
   return clean;
 }
 
-// 8. 載入 SVG
 async function loadFloorSVG(floor) {
   const container = document.getElementById('mapContainer');
   if (!container) return;
@@ -420,7 +434,6 @@ async function loadFloorSVG(floor) {
   }
 }
 
-// 📌 9. 繪製 POI 標註與點擊彈窗 (精準對應 poiData.js 與英譯轉換)
 function renderFloorPOIs(floor) {
   const container = document.getElementById('mapContainer');
   if (!container) return;
@@ -470,15 +483,11 @@ function renderFloorPOIs(floor) {
       let name = poi.name;
       let desc = poi.desc;
 
-      // 當語言為英文 (en) 時，自動進行文字比對轉換
-      if (typeof currentLang !== 'undefined' && currentLang === 'en' && typeof t === 'function') {
-        // 1. AED 比對
+      if (typeof currentLang !== 'undefined' && currentLang !== 'zh-TW' && typeof t === 'function') {
         if (poi.category === 'aed' || poi.name.includes('AED')) {
           name = t('poi_aed');
           desc = t('poi_aed_desc');
-        } 
-        // 2. 行李轉盤比對 (如：1號行李轉盤)
-        else if (poi.name.includes('號行李轉盤') || poi.name.includes('轉盤')) {
+        } else if (poi.name.includes('轉盤')) {
           const numMatch = poi.name.match(/([0-9]+[A-Za-z]?)/);
           if (numMatch) {
             const num = numMatch[1].toLowerCase();
@@ -486,9 +495,7 @@ function renderFloorPOIs(floor) {
             if (t(key) !== key) name = t(key);
           }
           desc = t('poi_baggage_desc');
-        }
-        // 3. 通用 key 比對 (若 poiData 有 id 欄位)
-        else if (poi.id) {
+        } else if (poi.id) {
           if (t(poi.id) !== poi.id) name = t(poi.id);
           if (t(`${poi.id}_desc`) !== `${poi.id}_desc`) desc = t(`${poi.id}_desc`);
         }

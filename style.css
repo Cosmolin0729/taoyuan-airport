@@ -1,5 +1,5 @@
 /* ==========================================================================
-   桃園國際機場室內導覽與服務系統 - 全局透視與手機橫向滑動修復樣式表 (style.css)
+   桃園國際機場室內導覽與服務系統 - 全局透視與手機漢堡展開選單樣式表 (style.css)
    ========================================================================== */
 
 /* --- 1. 全局基礎與全頁面背景圖 --- */
@@ -18,48 +18,77 @@ body {
   height: 100vh;
   height: -webkit-fill-available;
   overflow: hidden;
-  /* 全系統統一桃園機場情境背景圖 */
   background: linear-gradient(180deg, rgba(13, 59, 102, 0.65) 0%, rgba(10, 25, 47, 0.85) 100%),
               url('https://images.unsplash.com/photo-1542296332-2e4473faf563?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
 }
 
-/* --- 2. 頂部導覽列 (手機觸控滑動終極修復版) --- */
+/* --- 2. 頂部導覽列 (電腦版橫向 / 手機版漢堡展開) --- */
 .navbar {
   height: 60px;
-  background: rgba(13, 59, 102, 0.9);
+  background: rgba(13, 59, 102, 0.95);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: #ffffff;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 0 8px;
+  padding: 0 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  z-index: 100; /* 提高層級，確保不被下方地圖觸控層干擾 */
+  z-index: 1000;
   flex-shrink: 0;
-  width: 100vw;
-  box-sizing: border-box;
+  position: relative;
 }
 
 .navbar .logo {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   font-weight: 700;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 4px;
-  flex-shrink: 0; /* 標題絕不壓縮 */
-  margin-right: 6px;
+  gap: 8px;
+  letter-spacing: 0.5px;
+}
+
+/* 📱 漢堡圖示 (預設電腦版隱藏) */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.hamburger-btn span {
+  width: 100%;
+  height: 3px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* 漢堡按鈕展開動畫 (變成 X) */
+.hamburger-btn.active span:nth-child(1) {
+  transform: translateY(8.5px) rotate(45deg);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-btn.active span:nth-child(3) {
+  transform: translateY(-8.5px) rotate(-45deg);
 }
 
 .nav-right-group {
   display: flex;
   align-items: center;
   height: 100%;
-  flex: 1;
-  min-width: 0 !important; /* 解開 Flex 寬度鎖，允許內部內容溢出產生滾動 */
-  width: 100%;
-  overflow: hidden;
 }
 
 .nav-tabs {
@@ -67,47 +96,25 @@ body {
   gap: 8px;
   height: 100%;
   align-items: center;
-  width: 100%;
-  
-  /* 手機滑動核心設定 */
-  overflow-x: scroll !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch !important; /* iOS 必備滑動屬性 */
-  touch-action: pan-x !important; /* 強制把手機觸控手勢設定為橫向滾動 */
-  
-  /* 讓最右邊的選項滑過來時不會被切掉，預留內邊距 */
-  padding-right: 16px !important;
-  
-  /* 隱藏滾動條 */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.nav-tabs::-webkit-scrollbar {
-  display: none;
 }
 
 .nav-tab {
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.85);
-  padding: 0 10px;
-  font-size: 0.85rem;
+  padding: 0 14px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   white-space: nowrap;
   transition: all 0.25s ease;
   height: 100%;
   border-bottom: 3px solid transparent;
-  
-  /* 強制按鈕與圖示保持固定寬度，絕對不被螢幕寬度擠壓 */
-  flex: 0 0 auto !important;
-  flex-shrink: 0 !important;
 }
 
 .nav-tab:hover {
@@ -122,28 +129,23 @@ body {
 }
 
 .tab-icon {
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 /* 🌐 語言選擇器 */
 .lang-select {
-  padding: 2px 6px;
+  padding: 4px 8px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   background: rgba(13, 59, 102, 0.9);
   color: #ffffff;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   outline: none;
-  margin-left: 2px;
-  height: 28px;
-  max-width: 85px;
+  margin-left: 6px;
+  height: 32px;
   white-space: nowrap;
-  
-  /* 確保語言選單也是獨立不壓縮卡片 */
-  flex: 0 0 auto !important;
-  flex-shrink: 0 !important;
   transition: all 0.2s ease;
   text-align: center;
 }
@@ -151,6 +153,71 @@ body {
 .lang-select:focus, .lang-select:hover {
   border-color: #00d2ff;
   background: rgba(13, 59, 102, 1);
+}
+
+/* --- 📱 手機版 RWD 往下展開選單 (breakpoint <= 768px) --- */
+@media screen and (max-width: 768px) {
+  .hamburger-btn {
+    display: flex; /* 顯示漢堡按鈕 */
+  }
+
+  .nav-right-group {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: rgba(10, 25, 47, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out;
+    padding: 0 20px;
+  }
+
+  /* 展開狀態 */
+  .nav-right-group.open {
+    max-height: 400px;
+    padding: 16px 20px 20px 20px;
+  }
+
+  .nav-tabs {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .nav-tab {
+    height: 44px;
+    justify-content: flex-start;
+    padding: 0 16px;
+    border-radius: 8px;
+    border-bottom: none;
+    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .nav-tab.active {
+    background: #007bff;
+    color: #ffffff;
+    border-bottom: none;
+  }
+
+  .lang-select {
+    width: 100%;
+    max-width: 100%;
+    height: 42px;
+    margin-left: 0;
+    margin-top: 6px;
+    font-size: 0.9rem;
+  }
 }
 
 /* --- 3. 單頁分頁控制器 --- */
@@ -268,7 +335,7 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* --- 5. 🗺️ 室內地圖頁面 (含滿版地圖與半透明邊欄) --- */
+/* --- 5. 🗺️ 室內地圖頁面 --- */
 .main-container {
   display: flex;
   flex-direction: column;
@@ -483,7 +550,7 @@ select:focus { border-color: #007bff; }
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-/* --- 6. 📄 專用內頁與毛玻璃卡片 (航班、設施、交通) --- */
+/* --- 6. 📄 專用內頁與毛玻璃卡片 --- */
 .content-container {
   padding: 30px;
   max-width: 1000px;
@@ -598,7 +665,7 @@ select:focus { border-color: #007bff; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* RWD 適應 */
+/* RWD 輔助 */
 @media screen and (max-width: 600px) {
   .home-menu-grid { grid-template-columns: 1fr; }
   .hero-section h1 { font-size: 1.8rem; }
