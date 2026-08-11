@@ -1,5 +1,14 @@
 // js/locales/es.js
 const i18n_es = {
+  // 🏠 Inicio
+  tabHome: 'Inicio',
+  welcomeTitle: 'Bienvenido al Aeropuerto Internacional de Taoyuan',
+  welcomeSub: 'Su asistente inteligente de aeropuerto. Por favor seleccione un servicio:',
+  btnHomeMap: 'Navegación de Mapa Interior',
+  btnHomeFlights: 'Estado de Vuelos en Tiempo Real',
+  btnHomeFac: 'Guía de Servicios del Aeropuerto',
+  btnHomeTrans: 'Guía de Transporte del Aeropuerto',
+
   navTitle: '✈️ Guía del Aeropuerto de Taoyuan',
   tabMap: 'Mapa Interior',
   tabFlights: 'Estado de Vuelos',

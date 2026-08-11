@@ -1,19 +1,26 @@
 // js/locales/ja.js
 const i18n_ja = {
-  // ✈️ 標題與右上角 4 大功能按鈕
+  // 🏠 ホーム画面
+  tabHome: 'ホーム',
+  welcomeTitle: '桃園国際空港へようこそ',
+  welcomeSub: 'あなたのスマート空港ガイドです。必要なサービスを選択してください：',
+  btnHomeMap: '館内マップナビ',
+  btnHomeFlights: 'リアルタイムフライト動向',
+  btnHomeFac: '主要施設ガイド',
+  btnHomeTrans: '空港アクセス指引',
+
+  // ✈️ ヘッダー・ナビ
   navTitle: '✈️ 桃園空港交通ガイド',
   tabMap: '館内マップ',
   tabFlights: 'フライト動向',
   tabFacilities: '施設案内',
   tabTransport: '交通アクセス',
 
-  // 🗺️ 地圖導覽選單
   selectStart: '-- 出發地を選択 --',
   selectEnd: '-- 目的地を選択 --',
   btnStartNav: 'ナビ開始',
   btnClearPath: 'ルート消去',
 
-  // ✈️ 航班動態頁面
   flightHeader: '✈️ リアルタイムフライト検索',
   flightSubHeader: '便名を入力すると、チェックインカウンター(3F)や手荷物受取所(1F)へリアルタイムで案内します！',
   optDeparture: '🛫 ご出発 (国際線)',
@@ -21,7 +28,6 @@ const i18n_ja = {
   inputFlightPlaceholder: '便名を入力 (例: BR12, CI501)...',
   btnSearch: '検索',
 
-  // ℹ️ 航廈設施頁面
   facilityHeader: 'ℹ️ 空港の主要施設',
   facCheckinTitle: '🛫 チェックインカウンター (3F)',
   facCheckinDesc: '搭乗手続き、自動手荷物預け入れ、保安検査場。',
@@ -32,7 +38,6 @@ const i18n_ja = {
   facMrtTitle: '🚆 桃園機場捷運 (B2)',
   facMrtDesc: '台北駅および中壢方面へ接続（直達車・普通車）。',
 
-  // 🚌 交通指引頁面
   transHeader: '🚌 桃園国際空港へのアクセス',
   transSubHeader: 'ボタンをクリックするとマップ上に乗り場が表示されます：',
   transMrtTitle: '🚆 桃園機場捷運 (Airport MRT)',
@@ -55,7 +60,6 @@ const i18n_ja = {
   transTaxiDesc2: '乗り場：1階到着ロビー外側',
   btnNavTaxi: '📍 タクシー乗り場を表示 (1F)',
 
-  // 💬 系統彈窗提示與 POI 設施
   alertEnterFlight: '便名を入力してください！',
   alertNavSwitched: '{floor} マップに切り替えました！\n目的地：{location}',
   poi_baggage_1: '1号手荷物ターンテーブル',

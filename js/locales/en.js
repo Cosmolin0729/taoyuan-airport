@@ -1,19 +1,28 @@
 // js/locales/en.js
 const i18n_en = {
-  // ✈️ 標題與右上角 4 大功能按鈕 (與 HTML data-i18n 精準對應)
+  // 🏠 Home Page
+  tabHome: 'Home',
+  welcomeTitle: 'Welcome to Taoyuan International Airport',
+  welcomeSub: 'Your smart airport assistant. Please select a service:',
+  btnHomeMap: 'Indoor Map Navigation',
+  btnHomeFlights: 'Real-time Flight Status',
+  btnHomeFac: 'Airport Facilities Guide',
+  btnHomeTrans: 'Airport Transport Guide',
+
+  // ✈️ Header & Navigation
   navTitle: '✈️ Taoyuan Airport Guide',
   tabMap: 'Indoor Map',
   tabFlights: 'Flight Status',
   tabFacilities: 'Facilities',
   tabTransport: 'Transport Guide',
 
-  // 🗺️ 地圖導航選單
+  // 🗺️ Map Controls
   selectStart: '-- Select Starting Point --',
   selectEnd: '-- Where do you want to go? --',
   btnStartNav: 'Start Nav',
   btnClearPath: 'Clear Route',
 
-  // ✈️ 航班動態頁面
+  // ✈️ Flight Status Page
   flightHeader: '✈️ Real-time Flight Tracker',
   flightSubHeader: 'Enter your flight number to locate Check-in Counters (3F) or Baggage Claim Carousels (1F) in real time!',
   optDeparture: '🛫 Departures',
@@ -21,7 +30,7 @@ const i18n_en = {
   inputFlightPlaceholder: 'Enter flight number (e.g. BR12, CI501)...',
   btnSearch: 'Search',
 
-  // ℹ️ 航廈設施頁面
+  // ℹ️ Facilities Page
   facilityHeader: 'ℹ️ Key Airport Facilities',
   facCheckinTitle: '🛫 Check-in Counters (3F)',
   facCheckinDesc: 'Departure check-in counters, self bag-drop, and security check.',
@@ -32,7 +41,7 @@ const i18n_en = {
   facMrtTitle: '🚆 Airport MRT (B2)',
   facMrtDesc: 'Connects to Taipei Main Station and Zhongli District with Express and Commuter trains.',
 
-  // 🚌 交通指引頁面
+  // 🚌 Transport Page
   transHeader: '🚌 Transport Guide to Taoyuan Airport',
   transSubHeader: 'Click any button below to pinpoint platforms and boarding areas on the map:',
   transMrtTitle: '🚆 Taoyuan Airport MRT',
@@ -55,7 +64,7 @@ const i18n_en = {
   transTaxiDesc2: 'Boarding: Outside 1F Arrival Hall dedicated taxi queue',
   btnNavTaxi: '📍 Show Taxi Area on Map (1F)',
 
-  // 💬 系統彈窗提示與 POI 設施
+  // 💬 Alerts & POIs
   alertEnterFlight: 'Please enter a flight number!',
   alertNavSwitched: 'Switched to {floor} map!\nDestination set to: {location}',
   poi_baggage_1: 'Baggage Carousel 1',

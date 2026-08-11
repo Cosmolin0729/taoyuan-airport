@@ -1,5 +1,14 @@
 // js/locales/ko.js
 const i18n_ko = {
+  // 🏠 홈 화면
+  tabHome: '홈',
+  welcomeTitle: '타오위안 국제공항에 오신 것을 환영합니다',
+  welcomeSub: '스마트 공항 가이드입니다. 원하시는 서비스를 선택해 주세요:',
+  btnHomeMap: '실내 지도 길안내',
+  btnHomeFlights: '실시간 운항 현황',
+  btnHomeFac: '주요 편의시설 안내',
+  btnHomeTrans: '공항 교통 안내',
+
   navTitle: '✈️ 타오위안 공항 교통 안내',
   tabMap: '실내 지도',
   tabFlights: '운항 정보',

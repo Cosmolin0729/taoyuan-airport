@@ -1,5 +1,14 @@
 // js/locales/vi.js
 const i18n_vi = {
+  // 🏠 Trang chủ
+  tabHome: 'Trang chủ',
+  welcomeTitle: 'Chào mừng đến với Sân bay Quốc tế Đào Viên',
+  welcomeSub: 'Trợ lý hướng dẫn sân bay thông minh của bạn. Vui lòng chọn dịch vụ:',
+  btnHomeMap: 'Dẫn đường Bản đồ Trong nhà',
+  btnHomeFlights: 'Trạng thái Chuyến bay Trực tuyến',
+  btnHomeFac: 'Hướng dẫn Tiện ích Sân bay',
+  btnHomeTrans: 'Hướng dẫn Di chuyển Sân bay',
+
   navTitle: '✈️ Hướng Dẫn Sân Bay Đào Viên',
   tabMap: 'Bản Đồ Trong Nhà',
   tabFlights: 'Trạng Thái Bay',

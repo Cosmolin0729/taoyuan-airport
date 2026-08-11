@@ -15,9 +15,13 @@
     </div>
     
     <div class="nav-right-group">
-      <!-- 🌐 頂部分頁按鈕群 + 語言選單 (1x5 橫向排版) -->
+      <!-- 🌐 頂部分頁按鈕群 (單行橫排 1x5) -->
       <nav class="nav-tabs">
-        <button class="nav-tab active" data-page="page-map">
+        <button class="nav-tab active" data-page="page-home">
+          <span class="tab-icon">🏠</span>
+          <span data-i18n="tabHome">首頁</span>
+        </button>
+        <button class="nav-tab" data-page="page-map">
           <span class="tab-icon">🗺️</span>
           <span data-i18n="tabMap">室內地圖</span>
         </button>
@@ -48,8 +52,38 @@
     </div>
   </header>
 
+  <!-- ==================== 頁面 0：首頁 (封面頁) ==================== -->
+  <div id="page-home" class="app-page active">
+    <div class="home-container">
+      <div class="hero-section">
+        <div class="hero-badge">TAOYUAN INTERNATIONAL AIRPORT</div>
+        <h1 data-i18n="welcomeTitle">歡迎來到桃園國際機場</h1>
+        <p data-i18n="welcomeSub">您的智慧機場隨身導覽助理，請選擇您需要的服務：</p>
+      </div>
+      
+      <div class="home-menu-grid">
+        <div class="home-menu-card" onclick="document.querySelector('[data-page=\'page-map\']').click()">
+          <div class="card-icon">🗺️</div>
+          <h3 data-i18n="btnHomeMap">室內地圖導航</h3>
+        </div>
+        <div class="home-menu-card" onclick="document.querySelector('[data-page=\'page-flights\']').click()">
+          <div class="card-icon">✈️</div>
+          <h3 data-i18n="btnHomeFlights">航班即時動態</h3>
+        </div>
+        <div class="home-menu-card" onclick="document.querySelector('[data-page=\'page-facilities\']').click()">
+          <div class="card-icon">ℹ️</div>
+          <h3 data-i18n="btnHomeFac">重點設施導覽</h3>
+        </div>
+        <div class="home-menu-card" onclick="document.querySelector('[data-page=\'page-transport\']').click()">
+          <div class="card-icon">🚌</div>
+          <h3 data-i18n="btnHomeTrans">機場交通指引</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== 頁面 1：室內地圖主頁面 ==================== -->
-  <div id="page-map" class="app-page active">
+  <div id="page-map" class="app-page">
     <div class="main-container">
       <aside class="sidebar">
         <div class="control-group">
@@ -179,7 +213,7 @@
     </div>
   </div>
 
-  <!-- 📜 核心腳本引入順序 (務必確保語言檔於 i18n.js 之前載入) -->
+  <!-- 📜 核心腳本引入 -->
   <script src="js/locales/en.js"></script>
   <script src="js/locales/ja.js"></script>
   <script src="js/locales/ko.js"></script>
