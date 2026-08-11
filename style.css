@@ -23,7 +23,7 @@ body {
               url('https://images.unsplash.com/photo-1542296332-2e4473faf563?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
 }
 
-/* --- 2. 頂部導覽列 (Navbar - 徹底解決手機無法左右滑動問題) --- */
+/* --- 2. 頂部導覽列 (Navbar - 徹底修復手機觸控滑動) --- */
 .navbar {
   height: 60px;
   background: rgba(13, 59, 102, 0.85);
@@ -58,7 +58,7 @@ body {
   align-items: center;
   height: 100%;
   flex: 1; /* 佔滿右側所有剩餘空間 */
-  min-width: 0; /* 解開 Flex 寬度限制，允許內部溢出產生滾動 */
+  min-width: 0 !important; /* 🔥 關鍵：解開 Flex 寬度限制，允許內部溢出產生滾動條 */
   overflow: hidden;
 }
 
@@ -69,11 +69,11 @@ body {
   align-items: center;
   width: 100%;
   
-  /* 手機滑動核心設定 */
-  overflow-x: scroll !important; /* 強制開啟橫向滾動 */
+  /* 🔥 手機滑動核心設定 */
+  overflow-x: auto !important;             /* 強制開啟橫向滾動 */
   overflow-y: hidden;
-  -webkit-overflow-scrolling: touch; /* iOS 手指順暢滑動 */
-  touch-action: pan-x; /* 允許 Touch 手勢橫向拖動 */
+  -webkit-overflow-scrolling: touch;       /* iOS 手指順暢慣性滑動 */
+  touch-action: pan-x !important;          /* 允許 Touch 手勢橫向拖動 */
   
   /* 隱藏原生滾動條，保持頁面美觀 */
   scrollbar-width: none; /* Firefox */
@@ -101,7 +101,7 @@ body {
   transition: all 0.25s ease;
   height: 100%;
   border-bottom: 3px solid transparent;
-  flex-shrink: 0 !important; /* 強制按鈕維持固定寬度，防止手機畫面上被擠壓 */
+  flex-shrink: 0 !important; /* 🔥 關鍵：強制按鈕維持固定寬度，防止手機畫面上被擠壓 */
 }
 
 .nav-tab:hover {
