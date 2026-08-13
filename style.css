@@ -1,5 +1,5 @@
 /* ==========================================================================
-   桃園國際機場室內導覽與服務系統 - 全局透視與手機漢堡展開選單樣式表 (style.css)
+   桃園國際機場室內導覽與服務系統 - 全頁面垂直與橫向滑動徹底修復檔 (style.css)
    ========================================================================== */
 
 /* --- 1. 全局基礎與全頁面背景圖 --- */
@@ -11,18 +11,23 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* 防止整個瀏覽器出現雙重滾動條 */
+}
+
 body {
   color: #ffffff;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: -webkit-fill-available;
-  overflow: hidden;
   background: linear-gradient(180deg, rgba(13, 59, 102, 0.65) 0%, rgba(10, 25, 47, 0.85) 100%),
               url('https://images.unsplash.com/photo-1542296332-2e4473faf563?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
 }
 
-/* --- 2. 頂部導覽列 (電腦版橫向 / 手機版漢堡展開) --- */
+/* --- 2. 頂部導覽列 (Navbar - 獨立高層級) --- */
 .navbar {
   height: 60px;
   background: rgba(13, 59, 102, 0.95);
@@ -37,58 +42,28 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   z-index: 1000;
   flex-shrink: 0;
-  position: relative;
+  width: 100%;
 }
 
 .navbar .logo {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   letter-spacing: 0.5px;
-}
-
-/* 📱 漢堡圖示 (預設電腦版隱藏) */
-.hamburger-btn {
-  display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 28px;
-  height: 20px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  z-index: 1001;
-}
-
-.hamburger-btn span {
-  width: 100%;
-  height: 3px;
-  background-color: #ffffff;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
-/* 漢堡按鈕展開動畫 (變成 X) */
-.hamburger-btn.active span:nth-child(1) {
-  transform: translateY(8.5px) rotate(45deg);
-}
-
-.hamburger-btn.active span:nth-child(2) {
-  opacity: 0;
-}
-
-.hamburger-btn.active span:nth-child(3) {
-  transform: translateY(-8.5px) rotate(-45deg);
+  flex-shrink: 0;
+  margin-right: 12px;
 }
 
 .nav-right-group {
   display: flex;
   align-items: center;
   height: 100%;
+  flex: 1;
+  min-width: 0; /* 🔥 關鍵 1：解開 Flex 寬度鎖，允許內部溢出產生橫向滾動 */
+  overflow: hidden;
 }
 
 .nav-tabs {
@@ -96,25 +71,36 @@ body {
   gap: 8px;
   height: 100%;
   align-items: center;
+  width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-x !important;
+  scrollbar-width: none;
+}
+
+.nav-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-tab {
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.85);
-  padding: 0 14px;
-  font-size: 0.9rem;
+  padding: 0 12px;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   white-space: nowrap;
   transition: all 0.25s ease;
   height: 100%;
   border-bottom: 3px solid transparent;
+  flex: 0 0 auto !important; /* 🔥 關鍵 2：強迫選項保持原寬，絕不被螢幕擠壓 */
 }
 
 .nav-tab:hover {
@@ -132,20 +118,21 @@ body {
   font-size: 1rem;
 }
 
-/* 🌐 語言選擇器 */
 .lang-select {
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   background: rgba(13, 59, 102, 0.9);
   color: #ffffff;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
   outline: none;
   margin-left: 6px;
-  height: 32px;
+  height: 30px;
+  max-width: 90px;
   white-space: nowrap;
+  flex: 0 0 auto !important;
   transition: all 0.2s ease;
   text-align: center;
 }
@@ -155,137 +142,85 @@ body {
   background: rgba(13, 59, 102, 1);
 }
 
-/* --- 📱 手機版 RWD 往下展開選單 (breakpoint <= 768px) --- */
-@media screen and (max-width: 768px) {
-  .hamburger-btn {
-    display: flex; /* 顯示漢堡按鈕 */
-  }
-
-  .nav-right-group {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    background: rgba(10, 25, 47, 0.96);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    flex-direction: column;
-    align-items: stretch;
-    height: auto;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out;
-    padding: 0 20px;
-  }
-
-  /* 展開狀態 */
-  .nav-right-group.open {
-    max-height: 400px;
-    padding: 16px 20px 20px 20px;
-  }
-
-  .nav-tabs {
-    flex-direction: column;
-    height: auto;
-    width: 100%;
-    gap: 10px;
-    align-items: stretch;
-  }
-
-  .nav-tab {
-    height: 44px;
-    justify-content: flex-start;
-    padding: 0 16px;
-    border-radius: 8px;
-    border-bottom: none;
-    font-size: 0.95rem;
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .nav-tab.active {
-    background: #007bff;
-    color: #ffffff;
-    border-bottom: none;
-  }
-
-  .lang-select {
-    width: 100%;
-    max-width: 100%;
-    height: 42px;
-    margin-left: 0;
-    margin-top: 6px;
-    font-size: 0.9rem;
-  }
-}
-
-/* --- 3. 單頁分頁控制器 --- */
+/* --- 3. 全局頁面控制器 (🔥 徹底解決全頁面無法向下滾動的核心) --- */
 .app-page {
   display: none;
-  flex: 1;
-  height: calc(100vh - 60px);
-  overflow: hidden;
+  width: 100%;
+  height: calc(100vh - 60px); /* 固定顯示區域高度為扣除 Navbar 後的畫面 */
+  overflow-y: auto !important; /* 🔥 核心 3：強制把滾動權限交給當前分頁 */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch !important; /* iOS 慣性流暢滾動 */
+  scroll-behavior: smooth;
+  box-sizing: border-box;
 }
 
 .app-page.active {
-  display: flex;
-  flex-direction: column;
+  display: block; /* 避免 flex 伸縮干擾滾動計算 */
 }
 
-/* --- 4. 🏠 封面頁 --- */
+/* 獨立美化各頁面的滾動條 */
+.app-page::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-page::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+}
+
+/* --- 4. 🏠 封面頁 (首頁) --- */
 .home-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  height: 100%;
-  position: relative;
-  overflow-y: auto;
+  justify-content: flex-start;
+  padding: 30px 20px 80px 20px; /* 🔥 核心 4：底部留白 80px，確保滾動到底後最下方卡片絕不貼邊被切 */
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
 }
 
 .hero-section {
   text-align: center;
-  margin-bottom: 45px;
+  margin-bottom: 32px;
   color: #ffffff;
   animation: fadeInDown 0.8s ease-out;
 }
 
 .hero-badge {
   display: inline-block;
-  padding: 6px 18px;
+  padding: 5px 16px;
   background: rgba(0, 210, 255, 0.2);
   border: 1px solid rgba(0, 210, 255, 0.5);
   border-radius: 30px;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 1px;
   color: #00d2ff;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   backdrop-filter: blur(8px);
 }
 
 .hero-section h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   letter-spacing: 1px;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .hero-section p {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   color: rgba(255, 255, 255, 0.85);
   max-width: 600px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .home-menu-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 20px;
   max-width: 850px;
   width: 100%;
   animation: fadeInUp 0.8s ease-out;
@@ -297,7 +232,7 @@ body {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
-  padding: 32px 24px;
+  padding: 28px 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -309,25 +244,25 @@ body {
 }
 
 .home-menu-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   background: rgba(255, 255, 255, 0.22);
   border-color: rgba(0, 210, 255, 0.8);
   box-shadow: 0 15px 35px rgba(0, 210, 255, 0.25);
 }
 
 .home-menu-card .card-icon {
-  font-size: 3.2rem;
-  margin-bottom: 16px;
+  font-size: 2.8rem;
+  margin-bottom: 12px;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
   transition: transform 0.3s ease;
 }
 
 .home-menu-card:hover .card-icon {
-  transform: scale(1.15);
+  transform: scale(1.1);
 }
 
 .home-menu-card h3 {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
@@ -335,12 +270,16 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* --- 5. 🗺️ 室內地圖頁面 --- */
+/* --- 5. 🗺️ 室內地圖頁面 (地圖頁面特別隔離，防滾動與畫布衝突) --- */
+#page-map {
+  overflow: hidden !important; /* 地圖頁面保持滿版，不產生頁面滾動，由 SVG 自己拖拽 */
+}
+
 .main-container {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  height: calc(100vh - 60px);
+  width: 100%;
+  height: 100%;
   position: relative;
   overflow: hidden;
   background: transparent;
@@ -550,14 +489,14 @@ select:focus { border-color: #007bff; }
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
-/* --- 6. 📄 專用內頁與毛玻璃卡片 --- */
+/* --- 6. 📄 通用內頁容器 (航班、設施、交通) --- */
 .content-container {
-  padding: 30px;
+  padding: 30px 20px 80px 20px; /* 🔥 核心 5：內頁統一 Padding-Bottom 80px */
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
-  overflow-y: auto;
   color: #ffffff;
+  box-sizing: border-box;
 }
 
 .content-container h2 {
@@ -665,7 +604,7 @@ select:focus { border-color: #007bff; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* RWD 輔助 */
+/* RWD 移動端適應 */
 @media screen and (max-width: 600px) {
   .home-menu-grid { grid-template-columns: 1fr; }
   .hero-section h1 { font-size: 1.8rem; }

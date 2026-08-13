@@ -1,4 +1,5 @@
-// js/app.js - 全局主控邏輯 (含手機漢堡選單控制)
+// js/app.js - 全局主控邏輯、地圖載入與狀態保持導覽
+
 let currentFloor = 'F1';
 let scale = 1;
 let translateX = 0;
@@ -19,7 +20,6 @@ const TAOYUAN_AIRPORT_API = {
 
 document.addEventListener('DOMContentLoaded', () => {
   initPageNavigation();
-  initHamburgerMenu();
   initFloorButtons();
   initZoomControls();
   initMapDragAndTouch();
@@ -27,26 +27,37 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFloorSVG(currentFloor);
 
   initFlightSearch();
+  initNavigationControls();
 });
 
-// 📱 初始化漢堡選單向下展開/收合
-function initHamburgerMenu() {
-  const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const navMenu = document.getElementById('navMenu');
+// 🧭 初始化導航控制按鈕綁定 (與 navigation.js 連動)
+function initNavigationControls() {
+  const btnFindPath = document.getElementById('btnFindPath');
+  const btnClearPath = document.getElementById('btnClearPath');
 
-  if (hamburgerBtn && navMenu) {
-    hamburgerBtn.onclick = () => {
-      hamburgerBtn.classList.toggle('active');
-      navMenu.classList.toggle('open');
+  if (btnFindPath) {
+    btnFindPath.onclick = () => {
+      if (typeof showDemoNavigationPath === 'function') {
+        showDemoNavigationPath();
+      }
+    };
+  }
+
+  if (btnClearPath) {
+    btnClearPath.onclick = () => {
+      if (typeof resetNavigationState === 'function') {
+        resetNavigationState();
+      } else if (typeof clearDemoNavigationPath === 'function') {
+        clearDemoNavigationPath();
+      }
     };
   }
 }
 
+// 📄 初始化單頁頁面切換控制 (Tab Controls)
 function initPageNavigation() {
   const tabs = document.querySelectorAll('.nav-tab');
   const pages = document.querySelectorAll('.app-page');
-  const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const navMenu = document.getElementById('navMenu');
 
   tabs.forEach(tab => {
     tab.onclick = () => {
@@ -61,16 +72,11 @@ function initPageNavigation() {
           page.classList.remove('active');
         }
       });
-
-      // 📱 點選分頁後自動收合手機選單
-      if (navMenu && navMenu.classList.contains('open')) {
-        navMenu.classList.remove('open');
-        if (hamburgerBtn) hamburgerBtn.classList.remove('active');
-      }
     };
   });
 }
 
+// ✈️ 航班查詢模組初始化
 function initFlightSearch() {
   const searchBtn = document.getElementById('btnSearchFlight');
   const input = document.getElementById('flightInput');
@@ -83,6 +89,7 @@ function initFlightSearch() {
   }
 }
 
+// ✈️ 抓取桃園國際機場開放資料庫 API
 async function fetchRealtimeFlight() {
   const input = document.getElementById('flightInput');
   const typeSelect = document.getElementById('flightTypeSelect');
@@ -124,7 +131,7 @@ async function fetchRealtimeFlight() {
     }
 
   } catch (error) {
-    console.warn("API 跨網域連線受限，切換至精準解析資料庫：", error);
+    console.warn("API 跨網域連線受限，切換至靜態預測資料庫：", error);
     fetchFallbackFromPrototype(cleanQuery, selectedType);
   }
 }
@@ -150,9 +157,9 @@ function renderRealtimeResultCard(flight, type) {
   let locationId = "";
 
   if (isDep) {
-    const counter = flight.CheckInCounter || flight.counter || "18~21";
+    const counter = flight.CheckInCounter || flight.counter || "15";
     locationName = `3F - ${counter}號報到櫃檯`;
-    locationId = "f3-checkin";
+    locationId = `f3-checkin-${counter}`;
   } else {
     const belt = flight.BaggageBelt || flight.belt || "3";
     locationName = `1F - ${belt}號行李轉盤`;
@@ -190,11 +197,11 @@ function fetchFallbackFromPrototype(cleanQuery, selectedType) {
   const flight = {
     FlightNumber: cleanQuery,
     Airline: cleanQuery.startsWith("BR") ? "長榮航空" : (cleanQuery.startsWith("CI") ? "中華航空" : (cleanQuery.startsWith("JX") ? "星宇航空" : "航空公司")),
-    Destination: isDep ? "廣州 (CAN)" : "台北桃園 (TPE)",
+    Destination: isDep ? "東京成田 (NRT)" : "台北桃園 (TPE)",
     ScheduleTime: "11:55",
     Terminal: "T2",
     Gate: "D8",
-    CheckInCounter: "22",
+    CheckInCounter: "15",
     BaggageBelt: "3",
     Status: isDep ? "開放報到中" : "行李提領中"
   };
@@ -253,14 +260,13 @@ function navigateToMapLocation(targetFloor, locationId, locationName) {
   }
 
   setTimeout(() => {
-    if (typeof t === 'function') {
-      alert(t('alertNavSwitched', { floor: targetFloor, location: locationName }));
-    } else {
-      alert(`已切換至 ${targetFloor} 地圖！\n導航終點設為：${locationName}`);
+    if (typeof showDemoNavigationPath === 'function') {
+      showDemoNavigationPath();
     }
   }, 300);
 }
 
+// 🏢 初始化樓層按鈕綁定
 function initFloorButtons() {
   const buttons = document.querySelectorAll('#floorButtons button');
   buttons.forEach(btn => {
@@ -273,6 +279,7 @@ function initFloorButtons() {
   });
 }
 
+// 🔍 縮放控制按鈕與滾輪手勢
 function initZoomControls() {
   const zoomInBtn = document.getElementById('zoomIn');
   const zoomOutBtn = document.getElementById('zoomOut');
@@ -307,6 +314,7 @@ function initZoomControls() {
   }
 }
 
+// 🖱️ 滑鼠拖拽與手機觸控捏合 (Pinch Zoom) 控制
 function initMapDragAndTouch() {
   const wrapper = document.querySelector('.map-wrapper');
   if (!wrapper) return;
@@ -401,6 +409,7 @@ function formatFloorName(floorStr) {
   return clean;
 }
 
+// 🗺️ 載入 SVG 地圖並自動觸發狀態重繪
 async function loadFloorSVG(floor) {
   const container = document.getElementById('mapContainer');
   if (!container) return;
@@ -426,6 +435,11 @@ async function loadFloorSVG(floor) {
     resetZoom();
     renderFloorPOIs(floorFileName);
 
+    // 💡 關鍵重繪連動：當 SVG 載入完成後，自動檢查並畫上該樓層對應的導航線
+    if (typeof autoRedrawNavigationForCurrentFloor === 'function') {
+      autoRedrawNavigationForCurrentFloor(floorFileName);
+    }
+
   } catch (err) {
     container.innerHTML = `<div style="color:red; padding:40px; text-align:center;">
       <h3>⚠️ 無法載入地圖</h3>
@@ -434,6 +448,7 @@ async function loadFloorSVG(floor) {
   }
 }
 
+// 📌 渲染圖標 POI (固定於 SVG 內部圖層)
 function renderFloorPOIs(floor) {
   const container = document.getElementById('mapContainer');
   if (!container) return;
@@ -459,7 +474,7 @@ function renderFloorPOIs(floor) {
     const realY = (poi.y / 100) * svgHeight;
 
     const foreignObj = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-    const iconSize = 30;
+    const iconSize = 32;
     
     foreignObj.setAttribute("x", realX - iconSize / 2);
     foreignObj.setAttribute("y", realY - iconSize / 2);
@@ -480,28 +495,7 @@ function renderFloorPOIs(floor) {
 
     marker.onclick = (e) => {
       e.stopPropagation();
-      let name = poi.name;
-      let desc = poi.desc;
-
-      if (typeof currentLang !== 'undefined' && currentLang !== 'zh-TW' && typeof t === 'function') {
-        if (poi.category === 'aed' || poi.name.includes('AED')) {
-          name = t('poi_aed');
-          desc = t('poi_aed_desc');
-        } else if (poi.name.includes('轉盤')) {
-          const numMatch = poi.name.match(/([0-9]+[A-Za-z]?)/);
-          if (numMatch) {
-            const num = numMatch[1].toLowerCase();
-            const key = `poi_baggage_${num}`;
-            if (t(key) !== key) name = t(key);
-          }
-          desc = t('poi_baggage_desc');
-        } else if (poi.id) {
-          if (t(poi.id) !== poi.id) name = t(poi.id);
-          if (t(`${poi.id}_desc`) !== `${poi.id}_desc`) desc = t(`${poi.id}_desc`);
-        }
-      }
-
-      alert(`📌 ${name}\nℹ️ ${desc}`);
+      alert(`📌 ${poi.name}\nℹ️ ${poi.desc}`);
     };
 
     foreignObj.appendChild(marker);

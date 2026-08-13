@@ -14,14 +14,7 @@
       ✈️ 桃園機場交通指引
     </div>
     
-    <!-- 📱 手機版漢堡按鈕 -->
-    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-    
-    <div class="nav-right-group" id="navMenu">
+    <div class="nav-right-group">
       <!-- 🌐 頂部分頁按鈕群 + 語言選單 -->
       <nav class="nav-tabs">
         <button class="nav-tab active" data-page="page-home">
@@ -154,7 +147,7 @@
     </div>
   </div>
 
-  <!-- ==================== 頁面 3：航廈重點設施清單 ==================== -->
+  <!-- ==================== 頁面 3：航廈重點設施清單 (含無障礙服務) ==================== -->
   <div id="page-facilities" class="app-page">
     <div class="content-container">
       <h2 data-i18n="facilityHeader">ℹ️ 航廈重點設施清單</h2>
@@ -174,6 +167,18 @@
         <div class="facility-card">
           <h3 data-i18n="facMrtTitle">🚆 桃園機場捷運 (B2)</h3>
           <p data-i18n="facMrtDesc">連通台北車站與中壢市區，提供直達車與普通車。</p>
+        </div>
+
+        <!-- ♿ 無障礙與親善服務卡片 -->
+        <div class="facility-card">
+          <h3 data-i18n="facAccessibleTitle">♿ 無障礙與親善服務 (3F/1F)</h3>
+          <p data-i18n="facAccessibleDesc">專為高齡長者、行動不便旅客與親子家庭提供之友善設施：</p>
+          <div style="background: rgba(255, 255, 255, 0.7); padding: 12px; border-radius: 8px; margin: 10px 0; color: #333; font-size: 0.88rem; line-height: 1.6;">
+            <p style="margin-bottom: 6px; color: #0d3b66 !important;"><b>🛺 愛心車服務 (Buggy Service)：</b> 3F 出境管制區內提供高齡與行動不便旅客免費電動車接駁。</p>
+            <p style="margin-bottom: 6px; color: #0d3b66 !important;"><b>ℹ️ 報到大廳服務台：</b> 3F 設有低位無障礙諮詢櫃檯與博愛優先服務。</p>
+            <p style="margin-bottom: 0; color: #0d3b66 !important;"><b>🍼 哺集乳室：</b> 1F 北側與南側皆設有溫水機與隱密哺乳空間。</p>
+          </div>
+          <button onclick="navigateToMapLocation('F3', 'f3-buggy-service', '3F 愛心車服務乘車點')" class="btn-primary" data-i18n="btnNavBuggy">📍 在地圖上看標愛心車服務處 (3F)</button>
         </div>
       </div>
     </div>
@@ -220,7 +225,7 @@
     </div>
   </div>
 
-  <!-- 📜 核心腳本引入 -->
+  <!-- 📜 核心腳本引入 (注意：navigation.js 需放在 app.js 前面) -->
   <script src="js/locales/zh-TW.js"></script>
   <script src="js/locales/en.js"></script>
   <script src="js/locales/ja.js"></script>
@@ -231,6 +236,7 @@
   <script src="js/i18n.js"></script>
   <script src="js/poiData.js"></script>
   <script src="js/graph.js"></script>
+  <script src="js/navigation.js"></script>
   <script src="js/app.js"></script>
 
 </body>
