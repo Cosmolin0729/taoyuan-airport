@@ -76,5 +76,12 @@ const i18n_es = {
   poi_meeting_south: 'Punto de Encuentro Sur',
   poi_meeting_desc: 'Punto de Encuentro para Pasajeros',
   poi_medical_center: 'Centro Médico',
-  poi_medical_center_desc: 'Servicios médicos de emergencia y consultas'
+  poi_medical_center_desc: 'Servicios médicos de emergencia y consultas',
+
+  facAccessibleTitle: '♿ Servicios Accesibles y Preferenciales (3F/1F)',
+  facAccessibleDesc: 'Instalaciones adaptadas para personas mayores, pasajeros con movilidad reducida y familias:',
+  facBuggyItem: '<b>🛺 Servicio de Carrito Eléctrico (Buggy):</b> Transporte gratuito en zona de salidas 3F para adultos mayores y personas con movilidad reducida.',
+  facInfoDeskItem: '<b>ℹ️ Mostrador de Información:</b> Mostrador accesible de baja altura y atención preferencial en el vestíbulo de salidas 3F.',
+  facNursingItem: '<b>🍼 Sala de Lactancia:</b> Ubicadas en los lados norte y sur de 1F, con dispensador de agua tibia y espacios privados.',
+  btnNavBuggy: '📍 Ver Servicio de Carrito en el Mapa (3F)'
 };

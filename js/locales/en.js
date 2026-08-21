@@ -82,5 +82,13 @@ const i18n_en = {
   poi_meeting_south: 'South Meeting Point',
   poi_meeting_desc: 'Arrival Passenger Meeting Area',
   poi_medical_center: 'Medical Center',
-  poi_medical_center_desc: 'Emergency medical services and consultation'
+  poi_medical_center_desc: 'Emergency medical services and consultation',
+  
+  facAccessibleTitle: '♿ Accessible & Priority Services (3F/1F)',
+  facAccessibleDesc: 'Friendly facilities dedicated to seniors, passengers with reduced mobility, and families:',
+  facBuggyItem: '<b>🛺 Buggy Service:</b> Free electric cart shuttle inside 3F Departure Airside for seniors & PRM passengers.',
+  facInfoDeskItem: '<b>ℹ️ Information Counter:</b> 3F Departure lobby features lowered accessible counters & priority service.',
+  facNursingItem: '<b>🍼 Nursing Rooms:</b> Located at 1F North & South sides, equipped with warm water & private spaces.',
+  btnNavBuggy: '📍 Locate Buggy Service on Map (3F)',
+
 };

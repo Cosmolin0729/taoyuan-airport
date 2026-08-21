@@ -77,5 +77,12 @@ const i18n_ja = {
   poi_meeting_south: '南側ミーティングポイント',
   poi_meeting_desc: '到着客出迎え集合場所',
   poi_medical_center: '医療センター',
-  poi_medical_center_desc: '緊急医療および診療相談に対応'
+  poi_medical_center_desc: '緊急医療および診療相談に対応',
+
+  facAccessibleTitle: '♿ バリアフリー・優先サービス (3F/1F)',
+  facAccessibleDesc: '高齢者、お身体の不自由なお客様、ご家族連れのための優先施設：',
+  facBuggyItem: '<b>🛺 愛心車サービス (Buggy Service)：</b> 3F 出発制限エリア内にて高齢者・歩行困難者向け無料電動カート送迎。',
+  facInfoDeskItem: '<b>ℹ️ 出発ロビー案内カウンター：</b> 3F に低床バリアフリー窓口および優先案内を設置。',
+  facNursingItem: '<b>🍼 授乳室・ベビールーム：</b> 1F 北側・南側に温水器と個室授乳スペースを完備。',
+  btnNavBuggy: '📍 地図で愛心車乗車位置を表示 (3F)',
 };

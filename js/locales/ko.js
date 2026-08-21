@@ -76,5 +76,12 @@ const i18n_ko = {
   poi_meeting_south: '남측 만남의 장소',
   poi_meeting_desc: '입국 승객 만남의 장소',
   poi_medical_center: '의료 센터',
-  poi_medical_center_desc: '응급 진료 및 건강 상담 제공'
+  poi_medical_center_desc: '응급 진료 및 건강 상담 제공',
+
+  facAccessibleTitle: '♿ 교통약자 배려 및 편의 서비스 (3F/1F)',
+  facAccessibleDesc: '고령자, 교통약자 및 유아 동반 승객을 위한 맞춤형 편의 시설:',
+  facBuggyItem: '<b>🛺 전동 휠체어/카트 서비스:</b> 3F 출국 구역 내 고령자 및 거동 불편 승객 대상 무료 전동 카트 운행.',
+  facInfoDeskItem: '<b>ℹ️ 안내 데스크:</b> 3F 출국장에 휠체어 전용 낮은 창구 및 우선 상담 서비스 제공.',
+  facNursingItem: '<b>🍼 수유실:</b> 1F 북측 및 남측에 온수기 및 독립 수유실 완비.',
+  btnNavBuggy: '📍 지도에서 카트 서비스 위치 확인 (3F)',
 };

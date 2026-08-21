@@ -76,5 +76,12 @@ const i18n_vi = {
   poi_meeting_south: 'Điểm Hẹn Phía Nam',
   poi_meeting_desc: 'Điểm Hẹn Đón Hành Khách Đến',
   poi_medical_center: 'Trung Tâm Y Tế',
-  poi_medical_center_desc: 'Cung cấp dịch vụ y tế khẩn cấp và tư vấn sức khỏe'
+  poi_medical_center_desc: 'Cung cấp dịch vụ y tế khẩn cấp và tư vấn sức khỏe',
+  
+  facAccessibleTitle: '♿ Dịch Vụ Hỗ Trợ & Tiếp Cận Thân Thiện (3F/1F)',
+  facAccessibleDesc: 'Các tiện ích dành riêng cho người cao tuổi, hành khách hạn chế di chuyển và gia đình:',
+  facBuggyItem: '<b>🛺 Dịch vụ Xe Điện (Buggy Service):</b> Xe điện đưa đón miễn phí tại khu vực cách ly khởi hành 3F cho người cao tuổi và hành khách khó di chuyển.',
+  facInfoDeskItem: '<b>ℹ️ Quầy Thông Tin:</b> Sảnh khởi hành 3F có quầy tư vấn hạ thấp cho xe lăn và dịch vụ ưu tiên.',
+  facNursingItem: '<b>🍼 Phòng Chăm Sóc Trẻ Em:</b> Nằm ở phía Bắc và Nam tầng 1F, trang bị máy nước ấm và không gian riêng tư.',
+  btnNavBuggy: '📍 Xem vị trí xe điện trên bản đồ (3F)'
 };

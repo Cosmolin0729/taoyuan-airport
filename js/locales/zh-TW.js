@@ -82,5 +82,12 @@ const i18n_zhTW = {
   poi_meeting_south: '南會面點',
   poi_meeting_desc: '接機旅客會面集合點',
   poi_medical_center: '醫療中心',
-  poi_medical_center_desc: '提供緊急醫療與身體不適諮詢'
+  poi_medical_center_desc: '提供緊急醫療與身體不適諮詢',
+
+  facAccessibleTitle: '♿ 無障礙與親善服務 (3F/1F)',
+  facAccessibleDesc: '專為高齡長者、行動不便旅客與親子家庭提供之友善設施：',
+  facBuggyItem: '<b>🛺 愛心車服務 (Buggy Service)：</b> 3F 出境管制區內提供高齡與行動不便旅客免費電動車接駁。',
+  facInfoDeskItem: '<b>ℹ️ 報到大廳服務台：</b> 3F 設有低位無障礙諮詢櫃檯與博愛優先服務。',
+  facNursingItem: '<b>🍼 哺集乳室：</b> 1F 北側與南側皆設有溫水機與隱密哺乳空間。',
+  btnNavBuggy: '📍 在地圖上看標愛心車服務處 (3F)',
 };
